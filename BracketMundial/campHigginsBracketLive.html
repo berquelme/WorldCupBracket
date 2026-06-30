@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Camp Higgins – FIFA World Cup 2026 Daily Challenge</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=Courier+Prime:wght@400;700&display=swap');
+
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C96A;
+    --green-dark: #1A3A2A;
+    --green-mid: #2E5A3A;
+    --cream: #F5F0E8;
+    --ink: #1A1A1A;
+    --muted: #6B7280;
+    --border: #D4C9B0;
+    --win: #2E7D32;
+    --lose: #B71C1C;
+    --pending: #E8C96A;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--green-dark);
+    color: var(--cream);
+    min-height: 100vh;
+  }
+
+  header {
+    background: linear-gradient(135deg, #0D2419 0%, #1A3A2A 50%, #0D2419 100%);
+    border-bottom: 3px solid var(--gold);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .header-title { line-height: 1; }
+  .header-title span {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 13px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    display: block;
+  }
+  .header-title h1 {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 38px;
+    letter-spacing: 2px;
+    color: var(--cream);
+    line-height: 1;
+  }
+  .header-title h1 em { color: var(--gold); font-style: normal; }
+  .nav-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tab-btn {
+    background: transparent;
+    border: 1.5px solid var(--gold);
+    color: var(--gold);
+    font-family: 'Bebas Neue', cursive;
+    font-size: 16px;
+    letter-spacing: 1.5px;
+    padding: 8px 18px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.2s;
+  }
+  .tab-btn:hover, .tab-btn.active { background: var(--gold); color: var(--ink); }
+
+  .status-bar {
+    background: #0D2419;
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+    padding: 8px 32px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .connection-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    display: inline-block;
+    background: var(--muted);
+  }
+  .connection-dot.online { background: var(--win); box-shadow: 0 0 6px var(--win); }
+  .connection-dot.offline { background: var(--lose); }
+
+  .view { display: none; padding: 28px 24px; max-width: 1200px; margin: 0 auto; }
+  .view.active { display: block; }
+
+  .section-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 26px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    border-bottom: 1px solid var(--green-mid);
+    padding-bottom: 8px;
+    margin-bottom: 20px;
+  }
+
+  .info-strip {
+    background: rgba(201,168,76,0.08);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 4px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--gold-light);
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  .add-player-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .add-player-form input, select {
+    flex: 1; min-width: 180px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid var(--gold);
+    color: var(--cream);
+    padding: 9px 14px;
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    outline: none;
+  }
+  .add-player-form input::placeholder { color: var(--muted); }
+
+  .btn {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 16px;
+    letter-spacing: 1.5px;
+    padding: 9px 22px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-sm {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 13px;
+    letter-spacing: 1px;
+    padding: 5px 14px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-gold { background: var(--gold); color: var(--ink); }
+  .btn-gold:hover { background: var(--gold-light); }
+  .btn-outline { background: transparent; border: 1.5px solid var(--gold); color: var(--gold); }
+  .btn-outline:hover { background: var(--gold); color: var(--ink); }
+  .btn-green { background: var(--win); color: white; }
+  .btn-green:hover { background: #388E3C; }
+
+  .players-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+  }
+  .player-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 6px;
+    padding: 16px;
+    position: relative;
+  }
+  .player-card .player-name {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 22px;
+    letter-spacing: 1px;
+    color: var(--gold-light);
+  }
+  .player-card .player-score { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .player-card .delete-btn {
+    position: absolute; top: 10px; right: 10px;
+    background: transparent; border: none; color: var(--muted);
+    cursor: pointer; font-size: 16px; line-height: 1;
+    padding: 2px 6px; border-radius: 3px; transition: color 0.15s;
+  }
+  .player-card .delete-btn:hover { color: var(--lose); }
+
+  .day-nav {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 4px 0 16px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid rgba(201,168,76,0.15);
+  }
+  .day-pill {
+    flex-shrink: 0;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(201,168,76,0.3);
+    color: var(--cream);
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: all 0.15s;
+    position: relative;
+  }
+  .day-pill.active { background: var(--gold); color: var(--ink); border-color: var(--gold); font-weight: 700; }
+  .day-pill .day-date { display: block; font-size: 10px; opacity: 0.75; }
+  .day-pill.has-results::after {
+    content: '✓';
+    position: absolute; top: -4px; right: -4px;
+    background: var(--win); color: white;
+    width: 16px; height: 16px; border-radius: 50%;
+    font-size: 10px; display: flex; align-items: center; justify-content: center;
+  }
+
+  .match-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+  .match-card .match-time {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 8px;
+    font-family: 'Courier Prime', monospace;
+  }
+  .match-teams { display: flex; align-items: center; gap: 12px; }
+  .team-pick {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border: 1px solid transparent;
+  }
+  .team-pick:hover { background: rgba(201,168,76,0.1); }
+  .team-pick.selected { background: rgba(201,168,76,0.2); border-color: var(--gold); }
+  .team-pick .flag { font-size: 20px; }
+  .team-pick .name { font-size: 14px; font-weight: 500; flex: 1; }
+  .team-pick input.score-box {
+    width: 36px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(201,168,76,0.4);
+    color: var(--cream);
+    text-align: center;
+    padding: 4px;
+    border-radius: 3px;
+    font-size: 13px;
+    font-family: 'Courier Prime', monospace;
+  }
+  .vs-divider { font-family: 'Bebas Neue', cursive; color: var(--gold); font-size: 13px; }
+  .match-card.locked { opacity: 0.65; }
+  .match-card.locked .team-pick { cursor: default; }
+  .lock-tag { font-size: 10px; color: var(--gold); float: right; }
+
+  .leaderboard-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .leaderboard-table th {
+    font-family: 'Bebas Neue', cursive;
+    letter-spacing: 1.5px;
+    font-size: 14px;
+    color: var(--gold);
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--green-mid);
+  }
+  .leaderboard-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: var(--cream);
+  }
+  .leaderboard-table tr:hover td { background: rgba(255,255,255,0.04); }
+  .rank-badge { font-family: 'Bebas Neue', cursive; font-size: 18px; color: var(--muted); width: 32px; display: inline-block; text-align: center; }
+  .rank-1 .rank-badge { color: #FFD700; }
+  .rank-2 .rank-badge { color: #C0C0C0; }
+  .rank-3 .rank-badge { color: #CD7F32; }
+  .score-pill {
+    display: inline-block;
+    background: rgba(201,168,76,0.18);
+    color: var(--gold-light);
+    border-radius: 20px;
+    padding: 2px 12px;
+    font-weight: 600;
+    font-size: 13px;
+  }
+  .today-pill {
+    display: inline-block;
+    background: rgba(46,125,50,0.2);
+    color: #81C784;
+    border-radius: 20px;
+    padding: 2px 10px;
+    font-weight: 600;
+    font-size: 12px;
+  }
+
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 15px; }
+  .empty-state .icon { font-size: 36px; margin-bottom: 10px; }
+
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--win); color: white;
+    padding: 12px 20px; border-radius: 6px;
+    font-size: 14px; font-weight: 500;
+    opacity: 0; transform: translateY(10px);
+    transition: all 0.3s; z-index: 200;
+    max-width: 320px;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.72); z-index: 100;
+    align-items: center; justify-content: center; padding: 16px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #162A1E; border: 1px solid var(--gold);
+    border-radius: 8px; width: 100%; max-width: 560px;
+    max-height: 90vh; overflow-y: auto; padding: 24px;
+  }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+  .modal-header h2 { font-family: 'Bebas Neue', cursive; font-size: 22px; letter-spacing: 1.5px; color: var(--gold); }
+  .modal-close { background: none; border: none; color: var(--muted); font-size: 22px; cursor: pointer; line-height: 1; }
+  .modal-close:hover { color: var(--cream); }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media(max-width:700px){ .two-col { grid-template-columns: 1fr; } .match-teams { flex-direction: column; } .vs-divider { transform: rotate(90deg); } }
+
+  .loading-spinner {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 2px solid rgba(201,168,76,0.3);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-title">
+    <span>CAMP HIGGINS · FIFA WORLD CUP</span>
+    <h1>2026 DAILY <em>CHALLENGE</em></h1>
+  </div>
+  <nav class="nav-tabs">
+    <button class="tab-btn active" onclick="showView('leaderboard')">🏆 Leaderboard</button>
+    <button class="tab-btn" onclick="showView('players')">👥 Players</button>
+    <button class="tab-btn" onclick="showView('official')">⚽ Daily Results (Admin)</button>
+    <button class="tab-btn" onclick="showView('submit')">📋 Daily Picks</button>
+  </nav>
+</header>
+
+<div class="status-bar">
+  <span class="connection-dot" id="connection-dot"></span>
+  <span id="connection-label">Connecting...</span>
+</div>
+
+<!-- ══ LEADERBOARD ══ -->
+<div id="view-leaderboard" class="view active">
+  <div class="section-title">Standings</div>
+  <div id="leaderboard-content"></div>
+</div>
+
+<!-- ══ PLAYERS ══ -->
+<div id="view-players" class="view">
+  <div class="section-title">Players</div>
+  <div class="info-strip">
+    Anyone with this link can add their name here once. After that, they select their name on the Daily Picks tab to submit predictions — no password needed.
+  </div>
+  <div class="add-player-form">
+    <input type="text" id="new-player-name" placeholder="Player name..." maxlength="30"
+      onkeydown="if(event.key==='Enter') addPlayer()">
+    <button class="btn btn-gold" onclick="addPlayer()">+ Add Player</button>
+  </div>
+  <div id="players-list"></div>
+</div>
+
+<!-- ══ DAILY OFFICIAL RESULTS (admin) ══ -->
+<div id="view-official" class="view">
+  <div class="section-title">Daily Results — Admin Only</div>
+  <div class="info-strip">
+    Click the winning team for each match played that day (always editable, any day, any time). Score is optional, just for the +1 exact-score bonus. Players earn 3 points for picking the correct winner.
+  </div>
+  <div id="official-day-nav" class="day-nav"></div>
+  <div id="official-matches"></div>
+</div>
+
+<!-- ══ DAILY PICKS (players) ══ -->
+<div id="view-submit" class="view">
+  <div class="section-title">Submit Daily Picks</div>
+  <div class="two-col" style="margin-bottom:12px;">
+    <div>
+      <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px;">Select Your Name</label>
+      <select id="pick-player-select">
+        <option value="">— choose player —</option>
+      </select>
+    </div>
+    <div></div>
+  </div>
+  <div class="info-strip">
+    Pick a day, then choose who you think wins each match and enter your predicted score. Picks save automatically. Matches lock once they kick off.
+  </div>
+  <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--gold-light);margin-bottom:14px;cursor:pointer;">
+    <input type="checkbox" id="admin-override-toggle" onchange="toggleAdminOverride()" style="width:16px;height:16px;cursor:pointer;">
+    🔓 Admin override — let me edit picks even after a match has locked
+  </label>
+  <div id="picks-day-nav" class="day-nav"></div>
+  <div id="picks-matches"></div>
+</div>
+
+<!-- ══ PLAYER DETAIL MODAL ══ -->
+<div class="modal-overlay" id="picks-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-player-name">Player Picks</h2>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div id="modal-picks-content"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  SUPABASE CONNECTION
+// ═══════════════════════════════════════════════════════
+const SUPABASE_URL = 'https://dlvktldewavvzuvravas.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_ZAbmELwh9BZaNo7RWHx28g_lu_rpOyQ';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ═══════════════════════════════════════════════════════
+//  TOURNAMENT DAYS & MATCHES
+// ═══════════════════════════════════════════════════════
+
+const TOURNAMENT_DAYS = [
+  { date: '2026-06-28', label: 'Day 1', matches: [
+    { id: '73', t1:{name:'South Africa',flag:'🇿🇦'}, t2:{name:'Canada',flag:'🇨🇦'}, kickoff:'2026-06-28T15:00' },
+  ]},
+  { date: '2026-06-29', label: 'Day 2', matches: [
+    { id: '76', t1:{name:'Brazil',flag:'🇧🇷'}, t2:{name:'Japan',flag:'🇯🇵'}, kickoff:'2026-06-29T13:00' },
+    { id: '74', t1:{name:'Germany',flag:'🇩🇪'}, t2:{name:'Paraguay',flag:'🇵🇾'}, kickoff:'2026-06-29T16:30' },
+    { id: '75', t1:{name:'Netherlands',flag:'🇳🇱'}, t2:{name:'Morocco',flag:'🇲🇦'}, kickoff:'2026-06-29T21:00' },
+  ]},
+  { date: '2026-06-30', label: 'Day 3', matches: [
+    { id: '78', t1:{name:'Ivory Coast',flag:'🇨🇮'}, t2:{name:'Norway',flag:'🇳🇴'}, kickoff:'2026-06-30T13:00' },
+    { id: '77', t1:{name:'France',flag:'🇫🇷'}, t2:{name:'Sweden',flag:'🇸🇪'}, kickoff:'2026-06-30T17:00' },
+    { id: '79', t1:{name:'Mexico',flag:'🇲🇽'}, t2:{name:'Ecuador',flag:'🇪🇨'}, kickoff:'2026-06-30T21:00' },
+  ]},
+  { date: '2026-07-01', label: 'Day 4', matches: [
+    { id: '80', t1:{name:'England',flag:'🏴'}, t2:{name:'Congo DR',flag:'🇨🇩'}, kickoff:'2026-07-01T12:00' },
+    { id: '82', t1:{name:'Belgium',flag:'🇧🇪'}, t2:{name:'Senegal',flag:'🇸🇳'}, kickoff:'2026-07-01T16:00' },
+    { id: '81', t1:{name:'United States',flag:'🇺🇸'}, t2:{name:'Bosnia',flag:'🇧🇦'}, kickoff:'2026-07-01T20:00' },
+  ]},
+  { date: '2026-07-02', label: 'Day 5', matches: [
+    { id: '84', t1:{name:'Spain',flag:'🇪🇸'}, t2:{name:'Austria',flag:'🇦🇹'}, kickoff:'2026-07-02T15:00' },
+    { id: '83', t1:{name:'Portugal',flag:'🇵🇹'}, t2:{name:'Croatia',flag:'🇭🇷'}, kickoff:'2026-07-02T19:00' },
+    { id: '85', t1:{name:'Switzerland',flag:'🇨🇭'}, t2:{name:'Algeria',flag:'🇩🇿'}, kickoff:'2026-07-02T23:00' },
+  ]},
+  { date: '2026-07-03', label: 'Day 6', matches: [
+    { id: '88', t1:{name:'Australia',flag:'🇦🇺'}, t2:{name:'Egypt',flag:'🇪🇬'}, kickoff:'2026-07-03T14:00' },
+    { id: '86', t1:{name:'Argentina',flag:'🇦🇷'}, t2:{name:'Cabo Verde',flag:'🇨🇻'}, kickoff:'2026-07-03T18:00' },
+    { id: '87', t1:{name:'Colombia',flag:'🇨🇴'}, t2:{name:'Ghana',flag:'🇬🇭'}, kickoff:'2026-07-03T19:30' },
+  ]},
+  { date: '2026-07-04', label: 'Day 7 · R16', matches: [
+    { id: '89', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-04T15:00' },
+    { id: '91', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-04T19:00' },
+  ]},
+  { date: '2026-07-05', label: 'Day 8 · R16', matches: [
+    { id: '90', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-05T15:00' },
+    { id: '92', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-05T19:00' },
+  ]},
+  { date: '2026-07-06', label: 'Day 9 · R16', matches: [
+    { id: '93', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-06T15:00' },
+    { id: '95', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-06T19:00' },
+  ]},
+  { date: '2026-07-07', label: 'Day 10 · R16', matches: [
+    { id: '94', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-07T15:00' },
+    { id: '96', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-07T19:00' },
+  ]},
+  { date: '2026-07-09', label: 'Day 11 · QF', matches: [
+    { id: '97', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-09T15:00' },
+    { id: '99', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-09T19:00' },
+  ]},
+  { date: '2026-07-10', label: 'Day 12 · QF', matches: [
+    { id: '98', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-10T15:00' },
+  ]},
+  { date: '2026-07-11', label: 'Day 13 · QF', matches: [
+    { id: '100', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-11T15:00' },
+  ]},
+  { date: '2026-07-14', label: 'Day 14 · SF', matches: [
+    { id: '101', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-14T15:00' },
+  ]},
+  { date: '2026-07-15', label: 'Day 15 · SF', matches: [
+    { id: '102', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-15T15:00' },
+  ]},
+  { date: '2026-07-19', label: 'Day 16 · FINAL', matches: [
+    { id: 'F', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-19T15:00' },
+  ]},
+];
+
+function pointsForMatch(matchId) { return 3; }
+
+// ═══════════════════════════════════════════════════════
+//  LOCAL CACHE (mirrors the DB; refreshed on load + realtime)
+// ═══════════════════════════════════════════════════════
+let players = [];          // [{id, name}]
+let officialResults = {};  // { 'date|matchId': {winner, score1, score2} }
+let allPicks = {};         // { 'playerId|date|matchId': {winner, score1, score2} }
+
+function officialKey(date, matchId) { return date + '|' + matchId; }
+function pickKey(playerId, date, matchId) { return playerId + '|' + date + '|' + matchId; }
+
+// ═══════════════════════════════════════════════════════
+//  CONNECTION STATUS
+// ═══════════════════════════════════════════════════════
+function setConnectionStatus(status) {
+  const dot = document.getElementById('connection-dot');
+  const label = document.getElementById('connection-label');
+  if (status === 'online') {
+    dot.className = 'connection-dot online';
+    label.textContent = 'Live — connected to shared database';
+  } else if (status === 'connecting') {
+    dot.className = 'connection-dot';
+    label.innerHTML = '<span class="loading-spinner"></span>Connecting to shared database...';
+  } else {
+    dot.className = 'connection-dot offline';
+    label.textContent = 'Connection issue — changes may not save. Check your internet.';
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  LOAD ALL DATA FROM SUPABASE
+// ═══════════════════════════════════════════════════════
+async function loadAllData() {
+  setConnectionStatus('connecting');
+  try {
+    const [playersRes, picksRes, officialRes] = await Promise.all([
+      sb.from('players').select('*').order('created_at'),
+      sb.from('picks').select('*'),
+      sb.from('official_results').select('*'),
+    ]);
+
+    if (playersRes.error || picksRes.error || officialRes.error) {
+      throw playersRes.error || picksRes.error || officialRes.error;
+    }
+
+    players = playersRes.data.map(p => ({ id: p.id, name: p.name }));
+
+    officialResults = {};
+    for (const r of officialRes.data) {
+      officialResults[officialKey(r.match_date, r.match_id)] = {
+        winner: r.winner, score1: r.score1, score2: r.score2
+      };
+    }
+
+    allPicks = {};
+    for (const p of picksRes.data) {
+      allPicks[pickKey(p.player_id, p.match_date, p.match_id)] = {
+        winner: p.winner, score1: p.score1, score2: p.score2
+      };
+    }
+
+    setConnectionStatus('online');
+    renderCurrentView();
+  } catch (err) {
+    console.error('Load error:', err);
+    setConnectionStatus('offline');
+    showToast('Could not load data: ' + (err.message || 'unknown error'), true);
+  }
+}
+
+function renderCurrentView() {
+  const active = document.querySelector('.view.active');
+  if (!active) return;
+  const id = active.id;
+  if (id === 'view-leaderboard') renderLeaderboard();
+  if (id === 'view-players') renderPlayers();
+  if (id === 'view-official') { renderDayNav('official'); renderOfficialMatches(); }
+  if (id === 'view-submit') { renderPicksPlayerSelect(); renderDayNav('picks'); renderPicksMatches(); }
+}
+
+// ═══════════════════════════════════════════════════════
+//  REALTIME SUBSCRIPTIONS — keep everyone in sync live
+// ═══════════════════════════════════════════════════════
+function setupRealtime() {
+  sb.channel('public:players')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'players' }, () => {
+      loadAllData();
+    }).subscribe();
+
+  sb.channel('public:picks')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'picks' }, () => {
+      loadAllData();
+    }).subscribe();
+
+  sb.channel('public:official_results')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'official_results' }, () => {
+      loadAllData();
+    }).subscribe();
+}
+
+// ═══════════════════════════════════════════════════════
+//  LOCK LOGIC (ET)
+// ═══════════════════════════════════════════════════════
+function isMatchLocked(kickoffStr) {
+  const now = new Date();
+  const kickoff = new Date(kickoffStr + ':00-04:00'); // EDT (summer) = UTC-4
+  return now >= kickoff;
+}
+
+// ═══════════════════════════════════════════════════════
+//  SCORING
+// ═══════════════════════════════════════════════════════
+function scoreMatch(pick, official) {
+  if (!official || official.winner == null) return 0;
+  if (!pick || pick.winner == null) return 0;
+  let pts = 0;
+  if (pick.winner === official.winner) {
+    pts += pointsForMatch(official.matchId || 0);
+    if (pick.score1 !== '' && pick.score2 !== '' &&
+        String(pick.score1) === String(official.score1) &&
+        String(pick.score2) === String(official.score2)) {
+      pts += 1;
+    }
+  }
+  return pts;
+}
+
+function calcPlayerScore(playerId, todayDate) {
+  let total = 0, todayTotal = 0, correctCount = 0, playedCount = 0;
+  for (const day of TOURNAMENT_DAYS) {
+    for (const m of day.matches) {
+      const off = officialResults[officialKey(day.date, m.id)];
+      if (!off || off.winner == null) continue;
+      playedCount++;
+      const pick = allPicks[pickKey(playerId, day.date, m.id)];
+      const pts = scoreMatch(pick, off);
+      total += pts;
+      if (pick && pick.winner === off.winner) correctCount++;
+      if (day.date === todayDate) todayTotal += pts;
+    }
+  }
+  return { total, todayTotal, correctCount, playedCount };
+}
+
+function getTodayDateStr() {
+  const now = new Date();
+  return now.toISOString().slice(0,10);
+}
+
+// ═══════════════════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════════════════
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  event.target.classList.add('active');
+
+  if (name === 'leaderboard') renderLeaderboard();
+  if (name === 'players') renderPlayers();
+  if (name === 'official') { renderDayNav('official'); renderOfficialMatches(); }
+  if (name === 'submit') { renderPicksPlayerSelect(); renderDayNav('picks'); renderPicksMatches(); }
+}
+
+// ═══════════════════════════════════════════════════════
+//  PLAYERS
+// ═══════════════════════════════════════════════════════
+async function addPlayer() {
+  const input = document.getElementById('new-player-name');
+  const name = input.value.trim();
+  if (!name) return;
+  if (players.find(p => p.name.toLowerCase() === name.toLowerCase())) {
+    showToast('That name is already on the list!', true); return;
+  }
+  const id = 'p' + Date.now() + Math.random().toString(36).slice(2,7);
+  const { error } = await sb.from('players').insert({ id, name });
+  if (error) { showToast('Could not add player: ' + error.message, true); return; }
+  input.value = '';
+  showToast(name + ' added!');
+  // realtime will trigger reload; but reload immediately too for snappy feel
+  await loadAllData();
+}
+
+async function deletePlayer(id) {
+  if (!confirm('Remove this player and all their picks?')) return;
+  const { error } = await sb.from('players').delete().eq('id', id);
+  if (error) { showToast('Could not remove player: ' + error.message, true); return; }
+  await loadAllData();
+}
+
+function renderPlayers() {
+  const el = document.getElementById('players-list');
+  if (!players.length) {
+    el.innerHTML = `<div class="empty-state"><div class="icon">👥</div>No players yet. Add the first one above!</div>`;
+    return;
+  }
+  const today = getTodayDateStr();
+  el.innerHTML = `<div class="players-grid">${players.map(p => {
+    const s = calcPlayerScore(p.id, today);
+    return `<div class="player-card">
+      <button class="delete-btn" onclick="deletePlayer('${p.id}')" title="Remove">✕</button>
+      <div class="player-name">${escapeHtml(p.name)}</div>
+      <div class="player-score">${s.total} total pts · ${s.correctCount}/${s.playedCount} correct</div>
+      <button class="btn-sm btn-gold" onclick="goToPicksFor('${p.id}')" style="margin-top:8px;margin-right:6px;">✏ Edit Picks</button>
+      <button class="btn-sm btn-outline" onclick="viewPlayerPicks('${p.id}')">👁 View</button>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function goToPicksFor(playerId) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-submit').classList.add('active');
+  document.querySelectorAll('.tab-btn')[3].classList.add('active');
+  currentPicksPlayer = playerId;
+  renderPicksPlayerSelect(playerId);
+  renderDayNav('picks');
+  renderPicksMatches();
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ═══════════════════════════════════════════════════════
+//  DAY NAVIGATION
+// ═══════════════════════════════════════════════════════
+let currentOfficialDay = null;
+let currentPicksDay = null;
+let currentPicksPlayer = null;
+let adminOverride = false;
+
+function toggleAdminOverride() {
+  adminOverride = document.getElementById('admin-override-toggle').checked;
+  renderPicksMatches();
+  if (adminOverride) showToast('🔓 Admin override on — locked matches are now editable');
+}
+
+function renderDayNav(mode) {
+  const todayStr = getTodayDateStr();
+  let defaultDay = TOURNAMENT_DAYS.find(d => d.date === todayStr)?.date
+    || TOURNAMENT_DAYS.find(d => {
+      const hasOff = d.matches.some(m => officialResults[officialKey(d.date, m.id)]?.winner);
+      return !hasOff;
+    })?.date
+    || TOURNAMENT_DAYS[0].date;
+
+  if (mode === 'official' && !currentOfficialDay) currentOfficialDay = defaultDay;
+  if (mode === 'picks' && !currentPicksDay) currentPicksDay = defaultDay;
+
+  const navId = mode === 'official' ? 'official-day-nav' : 'picks-day-nav';
+  const el = document.getElementById(navId);
+  const activeDate = mode === 'official' ? currentOfficialDay : currentPicksDay;
+
+  el.innerHTML = TOURNAMENT_DAYS.map(d => {
+    const hasResults = d.matches.some(m => officialResults[officialKey(d.date, m.id)]?.winner);
+    const isToday = d.date === todayStr;
+    return `<div class="day-pill ${d.date===activeDate?'active':''} ${hasResults?'has-results':''}"
+      onclick="selectDay('${mode}','${d.date}')">
+      ${d.label}${isToday?' 📍':''}
+      <span class="day-date">${formatDateShort(d.date)}</span>
+    </div>`;
+  }).join('');
+}
+
+function formatDateShort(dateStr) {
+  const d = new Date(dateStr + 'T12:00:00');
+  return d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+}
+
+function selectDay(mode, date) {
+  if (mode === 'official') {
+    currentOfficialDay = date;
+    renderDayNav('official');
+    renderOfficialMatches();
+  } else {
+    currentPicksDay = date;
+    renderDayNav('picks');
+    renderPicksMatches();
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  OFFICIAL RESULTS (ADMIN)
+// ═══════════════════════════════════════════════════════
+function renderOfficialMatches() {
+  const el = document.getElementById('official-matches');
+  const day = TOURNAMENT_DAYS.find(d => d.date === currentOfficialDay);
+  if (!day) { el.innerHTML = ''; return; }
+
+  el.innerHTML = day.matches.map(m => {
+    const res = officialResults[officialKey(day.date, m.id)] || { score1:'', score2:'', winner:null };
+    const kickoffTime = formatKickoff(m.kickoff);
+
+    const teamRow = (team, scoreKey) => {
+      const isSel = res.winner === team.name;
+      return `<div class="team-pick ${isSel?'selected':''}"
+          onclick="setOfficialWinner('${day.date}','${m.id}','${team.name.replace(/'/g,"\\'")}')">
+        <span class="flag">${team.flag}</span>
+        <span class="name">${escapeHtml(team.name)}</span>
+        <input class="score-box" type="number" min="0" max="99" value="${res[scoreKey]||''}" placeholder="-"
+          onclick="event.stopPropagation()"
+          onchange="setOfficialScore('${day.date}','${m.id}','${scoreKey}',this.value)">
+      </div>`;
+    };
+
+    return `<div class="match-card">
+      <div class="match-time">M${m.id} · ${kickoffTime} ET ${res.winner ? `<span style="color:var(--win);font-weight:600;">✓ Winner set</span>` : ''}</div>
+      <div class="match-teams">
+        ${teamRow(m.t1, 'score1')}
+        <span class="vs-divider">VS</span>
+        ${teamRow(m.t2, 'score2')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function formatKickoff(kickoffStr) {
+  const [datePart, timePart] = kickoffStr.split('T');
+  const [h, mm] = timePart.split(':').map(Number);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  return `${h12}:${String(mm).padStart(2,'0')} ${ampm}`;
+}
+
+async function setOfficialWinner(date, matchId, teamName) {
+  const key = officialKey(date, matchId);
+  const current = officialResults[key] || { score1:'', score2:'', winner:null };
+  const newWinner = current.winner === teamName ? null : teamName;
+
+  // optimistic local update for snappy UI
+  officialResults[key] = { ...current, winner: newWinner };
+  renderOfficialMatches();
+
+  const { error } = await sb.from('official_results').upsert({
+    match_date: date,
+    match_id: matchId,
+    winner: newWinner,
+    score1: current.score1 || '',
+    score2: current.score2 || '',
+    updated_at: new Date().toISOString()
+  }, { onConflict: 'match_date,match_id' });
+
+  if (error) {
+    showToast('Could not save result: ' + error.message, true);
+    await loadAllData(); // revert to true state
+  } else {
+    showToast('Result saved for M' + matchId + '!');
+    await loadAllData();
+  }
+}
+
+async function setOfficialScore(date, matchId, key, val) {
+  const okey = officialKey(date, matchId);
+  const current = officialResults[okey] || { score1:'', score2:'', winner:null };
+  current[key] = val;
+  officialResults[okey] = current;
+
+  const { error } = await sb.from('official_results').upsert({
+    match_date: date,
+    match_id: matchId,
+    winner: current.winner,
+    score1: current.score1 || '',
+    score2: current.score2 || '',
+    updated_at: new Date().toISOString()
+  }, { onConflict: 'match_date,match_id' });
+
+  if (error) {
+    showToast('Could not save score: ' + error.message, true);
+  } else {
+    await loadAllData();
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  PLAYER PICKS
+// ═══════════════════════════════════════════════════════
+function renderPicksPlayerSelect(preselectId) {
+  const sel = document.getElementById('pick-player-select');
+  sel.innerHTML = `<option value="">— choose player —</option>` +
+    players.map(p => `<option value="${p.id}" ${preselectId===p.id || currentPicksPlayer===p.id?'selected':''}>${escapeHtml(p.name)}</option>`).join('');
+  sel.onchange = () => {
+    currentPicksPlayer = sel.value || null;
+    renderPicksMatches();
+  };
+  if (preselectId) currentPicksPlayer = preselectId;
+}
+
+function renderPicksMatches() {
+  const el = document.getElementById('picks-matches');
+  const day = TOURNAMENT_DAYS.find(d => d.date === currentPicksDay);
+  if (!day) { el.innerHTML = ''; return; }
+
+  if (!currentPicksPlayer) {
+    el.innerHTML = `<div class="empty-state"><div class="icon">👆</div>Select your name above to enter picks for this day.</div>`;
+    return;
+  }
+
+  el.innerHTML = day.matches.map(m => {
+    const pick = allPicks[pickKey(currentPicksPlayer, day.date, m.id)] || { score1:'', score2:'', winner:null };
+    const reallyLocked = isMatchLocked(m.kickoff);
+    const locked = reallyLocked && !adminOverride;
+    const kickoffTime = formatKickoff(m.kickoff);
+
+    const teamPickHTML = (team, scoreKey) => {
+      const isSel = pick.winner === team.name;
+      const clickAttr = locked ? '' : `onclick="pickTeam('${day.date}','${m.id}','${team.name.replace(/'/g,"\\'")}')"`;
+      return `<div class="team-pick ${isSel?'selected':''}" ${clickAttr} style="${locked?'cursor:default':''}">
+        <span class="flag">${team.flag}</span>
+        <span class="name">${escapeHtml(team.name)}</span>
+        <input class="score-box" type="number" min="0" max="99" value="${pick[scoreKey]||''}" placeholder="-"
+          ${locked?'disabled':''}
+          onclick="event.stopPropagation()"
+          onchange="setPickScore('${day.date}','${m.id}','${scoreKey}',this.value)">
+      </div>`;
+    };
+
+    return `<div class="match-card ${locked?'locked':''}">
+      <div class="match-time">M${m.id} · ${kickoffTime} ET ${locked?`<span class="lock-tag">🔒 Locked</span>`:''}${reallyLocked && adminOverride?`<span class="lock-tag" style="color:var(--gold-light)">🔓 Override active</span>`:''}</div>
+      <div class="match-teams">
+        ${teamPickHTML(m.t1, 'score1')}
+        <span class="vs-divider">VS</span>
+        ${teamPickHTML(m.t2, 'score2')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function pickTeam(date, matchId, teamName) {
+  if (!currentPicksPlayer) return;
+  const day = TOURNAMENT_DAYS.find(d => d.date === date);
+  const m = day.matches.find(mm => mm.id === matchId);
+  if (isMatchLocked(m.kickoff) && !adminOverride) {
+    showToast('🔒 This match has already started — picks are locked!', true);
+    return;
+  }
+  const key = pickKey(currentPicksPlayer, date, matchId);
+  const current = allPicks[key] || { score1:'', score2:'', winner:null };
+  const newWinner = current.winner === teamName ? null : teamName;
+
+  allPicks[key] = { ...current, winner: newWinner };
+  renderPicksMatches();
+
+  const { error } = await sb.from('picks').upsert({
+    player_id: currentPicksPlayer,
+    match_date: date,
+    match_id: matchId,
+    winner: newWinner,
+    score1: current.score1 || '',
+    score2: current.score2 || '',
+    updated_at: new Date().toISOString()
+  }, { onConflict: 'player_id,match_date,match_id' });
+
+  if (error) {
+    showToast('Could not save pick: ' + error.message, true);
+    await loadAllData();
+  } else {
+    showToast('Pick saved!');
+    await loadAllData();
+  }
+}
+
+async function setPickScore(date, matchId, key, val) {
+  if (!currentPicksPlayer) return;
+  const pkey = pickKey(currentPicksPlayer, date, matchId);
+  const current = allPicks[pkey] || { score1:'', score2:'', winner:null };
+  current[key] = val;
+  allPicks[pkey] = current;
+
+  const { error } = await sb.from('picks').upsert({
+    player_id: currentPicksPlayer,
+    match_date: date,
+    match_id: matchId,
+    winner: current.winner,
+    score1: current.score1 || '',
+    score2: current.score2 || '',
+    updated_at: new Date().toISOString()
+  }, { onConflict: 'player_id,match_date,match_id' });
+
+  if (error) {
+    showToast('Could not save score: ' + error.message, true);
+  } else {
+    await loadAllData();
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  LEADERBOARD
+// ═══════════════════════════════════════════════════════
+function renderLeaderboard() {
+  const el = document.getElementById('leaderboard-content');
+  if (!players.length) {
+    el.innerHTML = `<div class="empty-state"><div class="icon">🏆</div>No players yet. Go to the Players tab to add people!</div>`;
+    return;
+  }
+
+  const today = getTodayDateStr();
+  const todayDay = TOURNAMENT_DAYS.find(d => d.date === today);
+  const todayLabel = todayDay ? todayDay.label : null;
+
+  const scores = players.map(p => ({ ...p, ...calcPlayerScore(p.id, today) }))
+    .sort((a,b) => b.total - a.total || b.correctCount - a.correctCount);
+
+  let totalPlayed = 0;
+  for (const day of TOURNAMENT_DAYS) {
+    for (const m of day.matches) if (officialResults[officialKey(day.date, m.id)]?.winner) totalPlayed++;
+  }
+
+  let html = `<div class="info-strip">
+    ${totalPlayed} matches played so far ${todayLabel ? '· Today: ' + todayLabel : ''}
+  </div>
+  <table class="leaderboard-table">
+    <thead><tr>
+      <th style="width:42px">Rank</th>
+      <th>Player</th>
+      <th>Total Pts</th>
+      <th>Today's Pts</th>
+      <th>Correct</th>
+      <th></th>
+    </tr></thead><tbody>`;
+
+  scores.forEach((p, i) => {
+    const rankClass = i < 3 ? `rank-${i+1}` : '';
+    const rankEmoji = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
+    html += `<tr class="${rankClass}">
+      <td><span class="rank-badge">${rankEmoji || (i+1)}</span></td>
+      <td style="font-weight:500">${escapeHtml(p.name)}</td>
+      <td><span class="score-pill">${p.total}</span></td>
+      <td>${p.todayTotal > 0 ? `<span class="today-pill">+${p.todayTotal}</span>` : '<span style="color:var(--muted)">—</span>'}</td>
+      <td>${p.correctCount} / ${p.playedCount}</td>
+      <td><button class="btn-sm btn-outline" onclick="viewPlayerPicks('${p.id}')">View Picks</button></td>
+    </tr>`;
+  });
+
+  html += `</tbody></table>`;
+  el.innerHTML = html;
+}
+
+// ═══════════════════════════════════════════════════════
+//  VIEW PLAYER PICKS MODAL
+// ═══════════════════════════════════════════════════════
+function viewPlayerPicks(playerId) {
+  const player = players.find(p => p.id === playerId);
+  if (!player) return;
+  document.getElementById('modal-player-name').textContent = player.name + "'s Picks";
+
+  const today = getTodayDateStr();
+  const s = calcPlayerScore(playerId, today);
+
+  let html = `<div class="info-strip">Total: ${s.total} pts · ${s.correctCount}/${s.playedCount} correct predictions</div>`;
+
+  for (const day of TOURNAMENT_DAYS) {
+    const hasAnyPick = day.matches.some(m => allPicks[pickKey(playerId, day.date, m.id)]?.winner);
+    if (!hasAnyPick) continue;
+
+    html += `<div style="margin-top:14px;">
+      <div style="font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:1px;color:var(--gold);margin-bottom:6px;">
+        ${day.label} — ${formatDateShort(day.date)}
+      </div>`;
+
+    for (const m of day.matches) {
+      const pick = allPicks[pickKey(playerId, day.date, m.id)];
+      if (!pick || !pick.winner) continue;
+      const off = officialResults[officialKey(day.date, m.id)];
+      const played = !!(off && off.winner);
+      const correct = played && pick.winner === off.winner;
+      const icon = !played ? '⏳' : correct ? '✅' : '❌';
+      const pts = played ? scoreMatch(pick, off) : null;
+
+      html += `<div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:4px;
+        background:${correct?'rgba(46,125,50,0.15)':played?'rgba(183,28,28,0.1)':'rgba(255,255,255,0.03)'};
+        margin-bottom:4px;font-size:13px;">
+        <span>${icon}</span>
+        <span>${escapeHtml(pick.winner)}</span>
+        ${pick.score1!==''&&pick.score2!=='' ? `<span style="color:var(--muted);font-family:'Courier Prime',monospace;">${pick.score1}–${pick.score2}</span>` : ''}
+        ${pts!==null ? `<span style="margin-left:auto;color:var(--gold-light);font-size:12px;">+${pts} pts</span>` : `<span style="margin-left:auto;color:var(--muted);font-size:11px;">M${m.id}</span>`}
+      </div>`;
+    }
+    html += `</div>`;
+  }
+
+  document.getElementById('modal-picks-content').innerHTML = html || `<div class="empty-state">No picks submitted yet.</div>`;
+  document.getElementById('picks-modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('picks-modal').classList.remove('open');
+}
+
+// ═══════════════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════════════
+function showToast(msg, error) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = error ? 'var(--lose)' : 'var(--win)';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ═══════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════
+document.getElementById('picks-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+loadAllData();
+setupRealtime();
+</script>
+</body>
+</html>
