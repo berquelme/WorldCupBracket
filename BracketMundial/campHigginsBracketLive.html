@@ -451,7 +451,7 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 //  TOURNAMENT DAYS & MATCHES
 // ═══════════════════════════════════════════════════════
 
-const TOURNAMENT_DAYS = [
+const TOURNAMENT_DAYS_TEMPLATE = [
   { date: '2026-06-28', label: 'Day 1', matches: [
     { id: '73', t1:{name:'South Africa',flag:'🇿🇦'}, t2:{name:'Canada',flag:'🇨🇦'}, kickoff:'2026-06-28T15:00' },
   ]},
@@ -512,12 +512,122 @@ const TOURNAMENT_DAYS = [
   { date: '2026-07-15', label: 'Day 15 · SF', matches: [
     { id: '102', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-15T15:00' },
   ]},
+  { date: '2026-07-18', label: 'Day 15.5 · 3RD PLACE', matches: [
+    { id: '3RD', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-18T14:00' },
+  ]},
   { date: '2026-07-19', label: 'Day 16 · FINAL', matches: [
     { id: 'F', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-19T15:00' },
   ]},
 ];
 
 function pointsForMatch(matchId) { return 3; }
+
+// Working copy of the schedule — rebuilt fresh from the template on every
+// data load, then auto-advancement fills in any TBD slots we can resolve.
+// This avoids any risk of stale/mutated state across realtime refreshes.
+let TOURNAMENT_DAYS = JSON.parse(JSON.stringify(TOURNAMENT_DAYS_TEMPLATE));
+
+function resetTournamentDays() {
+  TOURNAMENT_DAYS = JSON.parse(JSON.stringify(TOURNAMENT_DAYS_TEMPLATE));
+}
+
+// ═══════════════════════════════════════════════════════
+//  BRACKET ADVANCEMENT MAP
+//  Defines which earlier match's winner fills which later
+//  match's t1/t2 slot. Source: official FIFA WC26 bracket.
+//  Format: { matchId: { t1From: sourceMatchId, t2From: sourceMatchId } }
+// ═══════════════════════════════════════════════════════
+const ADVANCEMENT_MAP = {
+  // Round of 16 — fed by Round of 32 winners
+  '89': { t1From: '73', t2From: '75' },   // Canada/S.Africa winner vs Netherlands/Morocco winner
+  '91': { t1From: '76', t2From: '78' },
+  '90': { t1From: '74', t2From: '77' },
+  '92': { t1From: '79', t2From: '80' },
+  '93': { t1From: '83', t2From: '84' },
+  '95': { t1From: '86', t2From: '88' },
+  '94': { t1From: '81', t2From: '82' },
+  '96': { t1From: '85', t2From: '87' },
+  // Quarterfinals — fed by Round of 16 winners
+  '97': { t1From: '89', t2From: '90' },
+  '99': { t1From: '91', t2From: '92' },
+  '98': { t1From: '93', t2From: '94' },
+  '100': { t1From: '95', t2From: '96' },
+  // Semifinals — fed by Quarterfinal winners
+  '101': { t1From: '97', t2From: '98' },
+  '102': { t1From: '99', t2From: '100' },
+  // Final — fed by Semifinal winners
+  'F': { t1From: '101', t2From: '102' },
+  // Third Place — fed by Semifinal LOSERS (handled separately, see below)
+};
+
+// Third place match is fed by the semifinal losers, not winners
+const THIRD_PLACE_SOURCES = { matchId: '3RD', from: ['101', '102'] };
+
+// Look up the LOSING team of a given match (used only for 3rd place)
+function getLoserTeam(matchId) {
+  const found = findMatchById(matchId);
+  if (!found) return null;
+  const off = officialResults[officialKey(found.day.date, matchId)];
+  if (!off || !off.winner) return null;
+  if (off.winner === found.match.t1.name) return found.match.t2;
+  if (off.winner === found.match.t2.name) return found.match.t1;
+  return null;
+}
+
+// Look up a team object {name, flag} for a given match id from TOURNAMENT_DAYS
+function findMatchById(matchId) {
+  for (const day of TOURNAMENT_DAYS) {
+    for (const m of day.matches) {
+      if (m.id === matchId) return { day, match: m };
+    }
+  }
+  return null;
+}
+
+// Given a match id, return the actual winning team object {name, flag}
+// by looking up the saved official result and matching it to t1/t2.
+function getWinnerTeam(matchId) {
+  const found = findMatchById(matchId);
+  if (!found) return null;
+  const off = officialResults[officialKey(found.day.date, matchId)];
+  if (!off || !off.winner) return null;
+  if (off.winner === found.match.t1.name) return found.match.t1;
+  if (off.winner === found.match.t2.name) return found.match.t2;
+  return null;
+}
+
+// Resolve TBD slots into real teams wherever the feeding match has a winner.
+// Mutates TOURNAMENT_DAYS in place (in-memory only — never written back to
+// the database, so this is always recalculated fresh from official results).
+function applyAutoAdvancement() {
+  // Run multiple passes since later rounds depend on earlier ones resolving first
+  for (let pass = 0; pass < 4; pass++) {
+    for (const matchId in ADVANCEMENT_MAP) {
+      const found = findMatchById(matchId);
+      if (!found) continue;
+      const { t1From, t2From } = ADVANCEMENT_MAP[matchId];
+
+      const winner1 = getWinnerTeam(t1From);
+      if (winner1 && found.match.t1.name === 'TBD') {
+        found.match.t1 = winner1;
+      }
+      const winner2 = getWinnerTeam(t2From);
+      if (winner2 && found.match.t2.name === 'TBD') {
+        found.match.t2 = winner2;
+      }
+    }
+
+    // Third place match — fed by the two semifinal LOSERS
+    const thirdPlace = findMatchById(THIRD_PLACE_SOURCES.matchId);
+    if (thirdPlace) {
+      const [sf1, sf2] = THIRD_PLACE_SOURCES.from;
+      const loser1 = getLoserTeam(sf1);
+      const loser2 = getLoserTeam(sf2);
+      if (loser1 && thirdPlace.match.t1.name === 'TBD') thirdPlace.match.t1 = loser1;
+      if (loser2 && thirdPlace.match.t2.name === 'TBD') thirdPlace.match.t2 = loser2;
+    }
+  }
+}
 
 // ═══════════════════════════════════════════════════════
 //  LOCAL CACHE (mirrors the DB; refreshed on load + realtime)
@@ -578,6 +688,9 @@ async function loadAllData() {
         winner: p.winner, score1: p.score1, score2: p.score2
       };
     }
+
+    resetTournamentDays();
+    applyAutoAdvancement();
 
     setConnectionStatus('online');
     renderCurrentView();
