@@ -481,30 +481,30 @@ const TOURNAMENT_DAYS_TEMPLATE = [
     { id: '87', t1:{name:'Colombia',flag:'🇨🇴'}, t2:{name:'Ghana',flag:'🇬🇭'}, kickoff:'2026-07-03T19:30' },
   ]},
   { date: '2026-07-04', label: 'Day 7 · R16', matches: [
-    { id: '89', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-04T15:00' },
-    { id: '91', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-04T19:00' },
+    { id: '90', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-04T13:00' },
+    { id: '89', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-04T17:00' },
   ]},
   { date: '2026-07-05', label: 'Day 8 · R16', matches: [
-    { id: '90', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-05T15:00' },
-    { id: '92', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-05T19:00' },
+    { id: '91', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-05T16:00' },
+    { id: '92', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-05T20:00' },
   ]},
   { date: '2026-07-06', label: 'Day 9 · R16', matches: [
     { id: '93', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-06T15:00' },
-    { id: '95', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-06T19:00' },
+    { id: '94', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-06T20:00' },
   ]},
   { date: '2026-07-07', label: 'Day 10 · R16', matches: [
-    { id: '94', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-07T15:00' },
-    { id: '96', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-07T19:00' },
+    { id: '95', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-07T12:00' },
+    { id: '96', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-07T16:00' },
   ]},
   { date: '2026-07-09', label: 'Day 11 · QF', matches: [
-    { id: '97', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-09T15:00' },
-    { id: '99', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-09T19:00' },
+    { id: '97', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-09T16:00' },
   ]},
   { date: '2026-07-10', label: 'Day 12 · QF', matches: [
     { id: '98', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-10T15:00' },
   ]},
   { date: '2026-07-11', label: 'Day 13 · QF', matches: [
-    { id: '100', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-11T15:00' },
+    { id: '99', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-11T17:00' },
+    { id: '100', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-11T21:00' },
   ]},
   { date: '2026-07-14', label: 'Day 14 · SF', matches: [
     { id: '101', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-14T15:00' },
@@ -513,10 +513,10 @@ const TOURNAMENT_DAYS_TEMPLATE = [
     { id: '102', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-15T15:00' },
   ]},
   { date: '2026-07-18', label: 'Day 15.5 · 3RD PLACE', matches: [
-    { id: '3RD', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-18T14:00' },
+    { id: '103', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-18T17:00' },
   ]},
   { date: '2026-07-19', label: 'Day 16 · FINAL', matches: [
-    { id: 'F', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-19T15:00' },
+    { id: '104', t1:{name:'TBD',flag:'❔'}, t2:{name:'TBD',flag:'❔'}, kickoff:'2026-07-19T15:00' },
   ]},
 ];
 
@@ -538,30 +538,29 @@ function resetTournamentDays() {
 //  Format: { matchId: { t1From: sourceMatchId, t2From: sourceMatchId } }
 // ═══════════════════════════════════════════════════════
 const ADVANCEMENT_MAP = {
-  // Round of 16 — fed by Round of 32 winners
-  '89': { t1From: '73', t2From: '75' },   // Canada/S.Africa winner vs Netherlands/Morocco winner
-  '91': { t1From: '76', t2From: '78' },
-  '90': { t1From: '74', t2From: '77' },
-  '92': { t1From: '79', t2From: '80' },
-  '93': { t1From: '83', t2From: '84' },
-  '95': { t1From: '86', t2From: '88' },
-  '94': { t1From: '81', t2From: '82' },
-  '96': { t1From: '85', t2From: '87' },
+  // Round of 16 — fed by Round of 32 winners (verified vs NBC/Sky Sports schedule)
+  '90': { t1From: '73', t2From: '75' },   // Canada vs Morocco
+  '89': { t1From: '74', t2From: '77' },   // Paraguay vs France/Sweden winner
+  '91': { t1From: '76', t2From: '78' },   // Brazil vs Ivory Coast/Norway winner
+  '92': { t1From: '79', t2From: '80' },   // Mexico/Ecuador vs England/Congo DR winner
+  '93': { t1From: '83', t2From: '84' },   // Portugal/Croatia vs Spain/Austria winner
+  '94': { t1From: '81', t2From: '82' },   // USA/Bosnia vs Belgium/Senegal winner
+  '95': { t1From: '86', t2From: '88' },   // Argentina/CaboVerde vs Australia/Egypt winner
+  '96': { t1From: '85', t2From: '87' },   // Switzerland/Algeria vs Colombia/Ghana winner
   // Quarterfinals — fed by Round of 16 winners
   '97': { t1From: '89', t2From: '90' },
-  '99': { t1From: '91', t2From: '92' },
   '98': { t1From: '93', t2From: '94' },
+  '99': { t1From: '91', t2From: '92' },
   '100': { t1From: '95', t2From: '96' },
   // Semifinals — fed by Quarterfinal winners
   '101': { t1From: '97', t2From: '98' },
   '102': { t1From: '99', t2From: '100' },
-  // Final — fed by Semifinal winners
-  'F': { t1From: '101', t2From: '102' },
-  // Third Place — fed by Semifinal LOSERS (handled separately, see below)
+  // Final (Match 104) — fed by Semifinal winners
+  '104': { t1From: '101', t2From: '102' },
 };
 
-// Third place match is fed by the semifinal losers, not winners
-const THIRD_PLACE_SOURCES = { matchId: '3RD', from: ['101', '102'] };
+// Third place match (Match 103) is fed by the semifinal LOSERS, not winners
+const THIRD_PLACE_SOURCES = { matchId: '103', from: ['101', '102'] };
 
 // Look up the LOSING team of a given match (used only for 3rd place)
 function getLoserTeam(matchId) {
