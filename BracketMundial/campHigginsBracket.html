@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Camp Higgins – FIFA World Cup 2026 Bracket Challenge</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=Courier+Prime:wght@400;700&display=swap');
+
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C96A;
+    --green-dark: #1A3A2A;
+    --green-mid: #2E5A3A;
+    --cream: #F5F0E8;
+    --ink: #1A1A1A;
+    --muted: #6B7280;
+    --border: #D4C9B0;
+    --win: #2E7D32;
+    --lose: #B71C1C;
+    --pending: #E8C96A;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--green-dark);
+    color: var(--cream);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: linear-gradient(135deg, #0D2419 0%, #1A3A2A 50%, #0D2419 100%);
+    border-bottom: 3px solid var(--gold);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .header-title { line-height: 1; }
+  .header-title span {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 13px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    display: block;
+  }
+  .header-title h1 {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 38px;
+    letter-spacing: 2px;
+    color: var(--cream);
+    line-height: 1;
+  }
+  .header-title h1 em {
+    color: var(--gold);
+    font-style: normal;
+  }
+  .nav-tabs {
+    display: flex;
+    gap: 6px;
+  }
+  .tab-btn {
+    background: transparent;
+    border: 1.5px solid var(--gold);
+    color: var(--gold);
+    font-family: 'Bebas Neue', cursive;
+    font-size: 16px;
+    letter-spacing: 1.5px;
+    padding: 8px 18px;
+    cursor: pointer;
+    border-radius: 3px;
+    transition: all 0.2s;
+  }
+  .tab-btn:hover, .tab-btn.active {
+    background: var(--gold);
+    color: var(--ink);
+  }
+
+  /* ── VIEWS ── */
+  .view { display: none; padding: 28px 24px; max-width: 1300px; margin: 0 auto; }
+  .view.active { display: block; }
+
+  /* ── SECTION HEADERS ── */
+  .section-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 26px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    border-bottom: 1px solid var(--green-mid);
+    padding-bottom: 8px;
+    margin-bottom: 20px;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 6px;
+    padding: 20px;
+  }
+
+  /* ── PLAYERS VIEW ── */
+  .players-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+  }
+  .player-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 6px;
+    padding: 16px;
+    position: relative;
+  }
+  .player-card .player-name {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 22px;
+    letter-spacing: 1px;
+    color: var(--gold-light);
+  }
+  .player-card .player-score {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .player-card .btn-sm {
+    margin-top: 10px;
+    margin-right: 6px;
+  }
+  .player-card .delete-btn {
+    position: absolute;
+    top: 10px; right: 10px;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    padding: 2px 6px;
+    border-radius: 3px;
+    transition: color 0.15s;
+  }
+  .player-card .delete-btn:hover { color: var(--lose); }
+
+  .add-player-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .add-player-form input {
+    flex: 1; min-width: 180px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid var(--gold);
+    color: var(--cream);
+    padding: 9px 14px;
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    outline: none;
+  }
+  .add-player-form input::placeholder { color: var(--muted); }
+
+  /* ── BUTTONS ── */
+  .btn {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 16px;
+    letter-spacing: 1.5px;
+    padding: 9px 22px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-sm {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 13px;
+    letter-spacing: 1px;
+    padding: 5px 14px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-gold { background: var(--gold); color: var(--ink); }
+  .btn-gold:hover { background: var(--gold-light); }
+  .btn-outline { background: transparent; border: 1.5px solid var(--gold); color: var(--gold); }
+  .btn-outline:hover { background: var(--gold); color: var(--ink); }
+  .btn-green { background: var(--win); color: white; }
+  .btn-green:hover { background: #388E3C; }
+
+  /* ── BRACKET ENTRY ── */
+  .bracket-instructions {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+  .rounds-container {
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    padding-bottom: 12px;
+  }
+
+  .round-col {
+    display: flex;
+    flex-direction: column;
+    min-width: 155px;
+    flex-shrink: 0;
+  }
+  .round-label {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    text-align: center;
+    padding: 6px 4px 10px;
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+    margin-bottom: 6px;
+  }
+  .round-label small { display: block; font-size: 10px; color: var(--muted); letter-spacing: 1px; font-family: 'Inter', sans-serif; }
+
+  .matches-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: space-around;
+  }
+
+  .match-slot {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(201,168,76,0.18);
+    border-radius: 4px;
+    margin: 4px 4px;
+    padding: 5px;
+    position: relative;
+  }
+  .match-slot .match-num {
+    font-size: 9px;
+    color: var(--muted);
+    font-family: 'Courier Prime', monospace;
+    margin-bottom: 3px;
+    letter-spacing: 1px;
+  }
+
+  .team-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 4px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-size: 12px;
+    color: var(--cream);
+  }
+  .team-row:hover { background: rgba(201,168,76,0.12); }
+  .team-row.selected {
+    background: rgba(201,168,76,0.22);
+    color: var(--gold-light);
+    font-weight: 600;
+  }
+  .team-row.eliminated { opacity: 0.4; }
+  .team-flag { font-size: 14px; }
+  .team-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 11.5px; }
+  .score-input {
+    width: 30px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(201,168,76,0.3);
+    color: var(--cream);
+    text-align: center;
+    font-size: 11px;
+    padding: 2px;
+    border-radius: 2px;
+    font-family: 'Courier Prime', monospace;
+  }
+  .score-input:focus { outline: 1px solid var(--gold); }
+
+  /* connector lines */
+  .round-col .connector {
+    width: 6px;
+    background: rgba(201,168,76,0.2);
+    align-self: stretch;
+  }
+
+  /* ── FINAL / CHAMPION ── */
+  .final-col {
+    min-width: 160px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .champion-box {
+    background: linear-gradient(135deg, rgba(201,168,76,0.15), rgba(201,168,76,0.05));
+    border: 2px solid var(--gold);
+    border-radius: 6px;
+    padding: 14px 16px;
+    text-align: center;
+    min-width: 140px;
+  }
+  .champion-box .label {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+  .champion-box .name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--cream);
+  }
+  .trophy { font-size: 32px; display: block; text-align: center; margin-bottom: 4px; }
+
+  /* ── LEADERBOARD ── */
+  .leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  .leaderboard-table th {
+    font-family: 'Bebas Neue', cursive;
+    letter-spacing: 1.5px;
+    font-size: 14px;
+    color: var(--gold);
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--green-mid);
+  }
+  .leaderboard-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: var(--cream);
+  }
+  .leaderboard-table tr:hover td { background: rgba(255,255,255,0.04); }
+  .rank-badge {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 18px;
+    color: var(--muted);
+    width: 32px;
+    display: inline-block;
+    text-align: center;
+  }
+  .rank-1 .rank-badge { color: #FFD700; }
+  .rank-2 .rank-badge { color: #C0C0C0; }
+  .rank-3 .rank-badge { color: #CD7F32; }
+  .score-pill {
+    display: inline-block;
+    background: rgba(201,168,76,0.18);
+    color: var(--gold-light);
+    border-radius: 20px;
+    padding: 2px 12px;
+    font-weight: 600;
+    font-size: 13px;
+  }
+  .progress-bar {
+    height: 6px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 3px;
+    overflow: hidden;
+    width: 120px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 8px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    border-radius: 3px;
+    transition: width 0.4s;
+  }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.72);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #162A1E;
+    border: 1px solid var(--gold);
+    border-radius: 8px;
+    width: 100%;
+    max-width: 560px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 24px;
+  }
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+  }
+  .modal-header h2 {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 22px;
+    letter-spacing: 1.5px;
+    color: var(--gold);
+  }
+  .modal-close {
+    background: none; border: none; color: var(--muted);
+    font-size: 22px; cursor: pointer; line-height: 1;
+    transition: color 0.15s;
+  }
+  .modal-close:hover { color: var(--cream); }
+
+  .toast {
+    position: fixed;
+    bottom: 24px; right: 24px;
+    background: var(--win);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s;
+    z-index: 200;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--muted);
+    font-size: 15px;
+  }
+  .empty-state .icon { font-size: 36px; margin-bottom: 10px; }
+
+  /* ── RESULTS INPUT (admin bracket) ── */
+  .save-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+  .info-strip {
+    background: rgba(201,168,76,0.08);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 4px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--gold-light);
+    margin-bottom: 16px;
+  }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media(max-width:700px){ .two-col { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-title">
+    <span>CAMP HIGGINS · FIFA WORLD CUP</span>
+    <h1>2026 BRACKET <em>CHALLENGE</em></h1>
+  </div>
+  <nav class="nav-tabs">
+    <button class="tab-btn active" onclick="showView('leaderboard')">🏆 Leaderboard</button>
+    <button class="tab-btn" onclick="showView('players')">👥 Players</button>
+    <button class="tab-btn" onclick="showView('official')">⚽ Official Results</button>
+    <button class="tab-btn" onclick="showView('submit')">📋 Submit Picks</button>
+  </nav>
+</header>
+
+<!-- ══ BACKUP BAR ══ -->
+<div style="background:#0D2419;border-bottom:1px solid rgba(201,168,76,0.2);padding:8px 32px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+  <span style="font-size:12px;color:var(--muted);font-family:'Inter',sans-serif;">💾 Data backup:</span>
+  <button class="btn-sm btn-outline" onclick="exportBackup()">⬇ Export Backup</button>
+  <button class="btn-sm btn-outline" onclick="document.getElementById('import-file').click()">⬆ Import Backup</button>
+  <input type="file" id="import-file" accept=".json" style="display:none" onchange="importBackup(event)">
+  <span id="last-saved-label" style="font-size:11px;color:var(--muted);margin-left:4px;"></span>
+</div>
+
+<!-- ══ LEADERBOARD ══ -->
+<div id="view-leaderboard" class="view active">
+  <div class="section-title">Standings</div>
+  <div id="leaderboard-content"></div>
+</div>
+
+<!-- ══ PLAYERS ══ -->
+<div id="view-players" class="view">
+  <div class="section-title">Players</div>
+  <div class="add-player-form">
+    <input type="text" id="new-player-name" placeholder="Player name..." maxlength="30"
+      onkeydown="if(event.key==='Enter') addPlayer()">
+    <button class="btn btn-gold" onclick="addPlayer()">+ Add Player</button>
+  </div>
+  <div id="players-list"></div>
+</div>
+
+<!-- ══ OFFICIAL RESULTS (admin) ══ -->
+<div id="view-official" class="view">
+  <div class="section-title">Official Results — Admin</div>
+  <div class="info-strip">
+    Click a team to mark them as the winner of each match. Enter scores (optional). 
+    Winners automatically advance to the next round. Save when done.
+  </div>
+  <div id="official-bracket"></div>
+  <div class="save-row">
+    <button class="btn btn-gold" onclick="saveOfficial()">Save Official Results</button>
+    <button class="btn btn-outline" onclick="recalcLeaderboard()">Recalculate Scores</button>
+  </div>
+</div>
+
+<!-- ══ SUBMIT PICKS ══ -->
+<div id="view-submit" class="view">
+  <div class="section-title">Submit Player Picks</div>
+  <div class="two-col" style="margin-bottom:16px;">
+    <div>
+      <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px;">Select Player</label>
+      <select id="pick-player-select" style="width:100%;background:rgba(255,255,255,0.08);border:1px solid var(--gold);color:var(--cream);padding:9px 14px;border-radius:4px;font-size:15px;outline:none;">
+        <option value="">— choose player —</option>
+      </select>
+    </div>
+    <div style="display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-green" onclick="savePicks()">Save Picks</button>
+      <button class="btn btn-outline" onclick="clearPicksForm()">Clear</button>
+    </div>
+  </div>
+  <div class="info-strip">
+    Select a player, then click a team in each match to pick who they think will advance. 
+    If a player already has picks saved, they will load automatically when selected.
+  </div>
+  <div id="picks-bracket"></div>
+</div>
+
+<!-- ══ PLAYER PICKS MODAL ══ -->
+<div class="modal-overlay" id="picks-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-player-name">Player Picks</h2>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div id="modal-picks-content"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════════════════
+
+// All 32 Round of 32 matches — kickoff times in Eastern Time (ET)
+// kickoff: 'YYYY-MM-DDTHH:MM' (24h, ET) — used to lock picks once match starts
+// Today Jun 29 matches are NOT locked (per house rule)
+const ROUND32 = [
+  // LEFT SIDE
+  { id: 74, t1: {name:'Germany',     flag:'🇩🇪'}, t2: {name:'Paraguay',   flag:'🇵🇾'}, date:'Mon Jun 29 4:30PM ET', kickoff:'2026-06-29T16:30', todayExempt:true },
+  { id: 77, t1: {name:'France',      flag:'🇫🇷'}, t2: {name:'Sweden',     flag:'🇸🇪'}, date:'Tue Jun 30 5:00PM ET', kickoff:'2026-06-30T17:00', todayExempt:false },
+  { id: 73, t1: {name:'South Africa',flag:'🇿🇦'}, t2: {name:'Canada',     flag:'🇨🇦'}, date:'Sun Jun 28 3:00PM ET', kickoff:'2026-06-28T15:00', todayExempt:true },
+  { id: 75, t1: {name:'Netherlands', flag:'🇳🇱'}, t2: {name:'Morocco',    flag:'🇲🇦'}, date:'Mon Jun 29 9:00PM ET', kickoff:'2026-06-29T21:00', todayExempt:true },
+  { id: 83, t1: {name:'Portugal',    flag:'🇵🇹'}, t2: {name:'Croatia',    flag:'🇭🇷'}, date:'Thu Jul 2 7:00PM ET',  kickoff:'2026-07-02T19:00', todayExempt:false },
+  { id: 84, t1: {name:'Spain',       flag:'🇪🇸'}, t2: {name:'Austria',    flag:'🇦🇹'}, date:'Thu Jul 2 3:00PM ET',  kickoff:'2026-07-02T15:00', todayExempt:false },
+  { id: 81, t1: {name:'United States',flag:'🇺🇸'}, t2: {name:'Bosnia',   flag:'🇧🇦'}, date:'Wed Jul 1 8:00PM ET',  kickoff:'2026-07-01T20:00', todayExempt:false },
+  { id: 82, t1: {name:'Belgium',     flag:'🇧🇪'}, t2: {name:'Senegal',    flag:'🇸🇳'}, date:'Wed Jul 1 4:00PM ET',  kickoff:'2026-07-01T16:00', todayExempt:false },
+  // RIGHT SIDE
+  { id: 76, t1: {name:'Brazil',      flag:'🇧🇷'}, t2: {name:'Japan',      flag:'🇯🇵'}, date:'Mon Jun 29 1:00PM ET', kickoff:'2026-06-29T13:00', todayExempt:true },
+  { id: 78, t1: {name:'Ivory Coast', flag:'🇨🇮'}, t2: {name:'Norway',     flag:'🇳🇴'}, date:'Tue Jun 30 1:00PM ET', kickoff:'2026-06-30T13:00', todayExempt:false },
+  { id: 79, t1: {name:'Mexico',      flag:'🇲🇽'}, t2: {name:'Ecuador',    flag:'🇪🇨'}, date:'Tue Jun 30 9:00PM ET', kickoff:'2026-06-30T21:00', todayExempt:false },
+  { id: 80, t1: {name:'England',     flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿'}, t2: {name:'Congo DR', flag:'🇨🇩'}, date:'Wed Jul 1 12:00PM ET', kickoff:'2026-07-01T12:00', todayExempt:false },
+  { id: 86, t1: {name:'Argentina',   flag:'🇦🇷'}, t2: {name:'Cabo Verde', flag:'🇨🇻'}, date:'Fri Jul 3 6:00PM ET',  kickoff:'2026-07-03T18:00', todayExempt:false },
+  { id: 88, t1: {name:'Australia',   flag:'🇦🇺'}, t2: {name:'Egypt',      flag:'🇪🇬'}, date:'Fri Jul 3 2:00PM ET',  kickoff:'2026-07-03T14:00', todayExempt:false },
+  { id: 85, t1: {name:'Switzerland', flag:'🇨🇭'}, t2: {name:'Algeria',    flag:'🇩🇿'}, date:'Thu Jul 2 11:00PM ET', kickoff:'2026-07-02T23:00', todayExempt:false },
+  { id: 87, t1: {name:'Colombia',    flag:'🇨🇴'}, t2: {name:'Ghana',      flag:'🇬🇭'}, date:'Fri Jul 3 7:30PM ET',  kickoff:'2026-07-03T19:30', todayExempt:false },
+];
+
+// Round of 16 kickoff times ET (Jul 4-7)
+const R16_KICKOFFS = [
+  '2026-07-04T15:00', // M89
+  '2026-07-05T15:00', // M90
+  '2026-07-06T15:00', // M93
+  '2026-07-07T15:00', // M94
+  '2026-07-04T19:00', // M91
+  '2026-07-05T19:00', // M92
+  '2026-07-06T19:00', // M95
+  '2026-07-07T19:00', // M96
+];
+// QF kickoff times ET (Jul 9-11)
+const QF_KICKOFFS = [
+  '2026-07-09T15:00',
+  '2026-07-10T15:00',
+  '2026-07-09T19:00',
+  '2026-07-11T15:00',
+];
+// SF kickoff times ET (Jul 14-15)
+const SF_KICKOFFS = ['2026-07-14T15:00','2026-07-15T15:00'];
+// Final ET
+const F_KICKOFF = '2026-07-19T15:00';
+
+// All kickoffs by round index
+const ROUND_KICKOFFS = [
+  ROUND32.map(m => ({ kickoff: m.kickoff, todayExempt: m.todayExempt })),
+  R16_KICKOFFS.map(k => ({ kickoff: k, todayExempt: false })),
+  QF_KICKOFFS.map(k => ({ kickoff: k, todayExempt: false })),
+  SF_KICKOFFS.map(k => ({ kickoff: k, todayExempt: false })),
+  [{ kickoff: F_KICKOFF, todayExempt: false }],
+];
+
+// Returns true if a match is locked for player picks (kicked off and not today-exempt)
+function isMatchLocked(roundIdx, matchIdx) {
+  const info = ROUND_KICKOFFS[roundIdx]?.[matchIdx];
+  if (!info) return false;
+  if (info.todayExempt) return false;
+  const now = new Date();
+  const kickoff = new Date(info.kickoff + ':00-05:00'); // ET = UTC-5 (EDT)
+  return now >= kickoff;
+}
+
+// Tournament structure: 5 rounds (R32 → R16 → QF → SF → F)
+// We'll track each round as array of match objects
+// matches in each round are auto-generated from previous round winners
+
+function initTournament() {
+  return {
+    rounds: [
+      // Round of 32 – 16 matches
+      ROUND32.map(m => ({
+        ...m,
+        winner: null, score1: '', score2: ''
+      })),
+      // Round of 16 – 8 matches (auto-populated)
+      Array(8).fill(null).map((_, i) => ({
+        id: 89 + i, t1: null, t2: null, winner: null, score1: '', score2: ''
+      })),
+      // Quarterfinals – 4 matches
+      Array(4).fill(null).map((_, i) => ({
+        id: 97 + i, t1: null, t2: null, winner: null, score1: '', score2: ''
+      })),
+      // Semifinals – 2 matches
+      Array(2).fill(null).map((_, i) => ({
+        id: 101 + i, t1: null, t2: null, winner: null, score1: '', score2: ''
+      })),
+      // Final – 1 match
+      [{ id: 'F', t1: null, t2: null, winner: null, score1: '', score2: '' }]
+    ],
+    champion: null
+  };
+}
+
+// How R32 pairs feed into R16:
+// Left side: matches 0-3 → R16[0], matches 4-7 → R16[2]
+// Right side: matches 8-11 → R16[6], matches 12-15 → R16[4]
+// This mirrors the real bracket structure:
+// R16[0]=M89: winner(74) vs winner(77) → feeds QF[0]
+// R16[1]=M90: winner(73) vs winner(75) → feeds QF[0]
+// R16[2]=M93: winner(83) vs winner(84) → feeds QF[1] (left bottom)
+// R16[3]=M94: winner(81) vs winner(82) → feeds QF[1]
+// R16[4]=M91: winner(76) vs winner(78) → feeds QF[2] (right top)
+// R16[5]=M92: winner(79) vs winner(80) → feeds QF[2]
+// R16[6]=M95: winner(86) vs winner(88) → feeds QF[3] (right bottom)
+// R16[7]=M96: winner(85) vs winner(87) → feeds QF[3]
+
+const R32_TO_R16 = [
+  [0,1],[2,3],[4,5],[6,7],   // left side → R16 idx 0,1,2,3
+  [8,9],[10,11],[12,13],[14,15] // right side → R16 idx 4,5,6,7
+];
+// R16 pairs → QF
+const R16_TO_QF = [[0,1],[2,3],[4,5],[6,7]]; // R16[0,1]→QF[0], R16[2,3]→QF[1], R16[4,5]→QF[2], R16[6,7]→QF[3]
+// QF pairs → SF
+const QF_TO_SF = [[0,1],[2,3]]; // QF[0,1]→SF[0], QF[2,3]→SF[1]
+// SF → Final
+const SF_TO_F = [[0,1]];
+
+const ROUND_NAMES = ['Round of 32','Round of 16','Quarterfinals','Semifinals','Final'];
+const ROUND_DATES = ['Jun 28 – Jul 3','Jul 4 – 7','Jul 9 – 11','Jul 14 – 15','Jul 19'];
+
+// ── STATE ──
+let state = {
+  official: initTournament(),
+  players: [],  // [{id, name}]
+  picks: {}     // {playerId: tournament_clone}
+};
+
+function loadState() {
+  try {
+    const s = localStorage.getItem('campHiggins2026');
+    if (s) state = JSON.parse(s);
+  } catch(e) {}
+}
+function saveState() {
+  state._lastSaved = new Date().toISOString();
+  localStorage.setItem('campHiggins2026', JSON.stringify(state));
+  updateLastSavedLabel();
+}
+
+function updateLastSavedLabel() {
+  const el = document.getElementById('last-saved-label');
+  if (!el) return;
+  if (state._lastSaved) {
+    const d = new Date(state._lastSaved);
+    el.textContent = 'Last saved: ' + d.toLocaleDateString() + ' ' + d.toLocaleTimeString();
+  }
+}
+
+function exportBackup() {
+  const data = JSON.stringify(state, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const date = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = 'campHiggins-backup-' + date + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Backup downloaded!');
+}
+
+function importBackup(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (!imported.players || !imported.official) {
+        showToast('Invalid backup file!', true); return;
+      }
+      state = imported;
+      saveState();
+      propagateWinners(state.official);
+      renderLeaderboard();
+      renderPlayers();
+      showToast('Backup restored! ' + state.players.length + ' players loaded.');
+    } catch(err) {
+      showToast('Could not read file. Is it a valid backup?', true);
+    }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+// ═══════════════════════════════════════════════════════
+//  TOURNAMENT PROPAGATION
+// ═══════════════════════════════════════════════════════
+
+function propagateWinners(tournament) {
+  // propagate R32 → R16
+  for (let i = 0; i < 8; i++) {
+    const [a, b] = R32_TO_R16[i];
+    tournament.rounds[1][i].t1 = tournament.rounds[0][a].winner;
+    tournament.rounds[1][i].t2 = tournament.rounds[0][b].winner;
+    // if either slot changed, clear winner
+  }
+  // R16 → QF
+  for (let i = 0; i < 4; i++) {
+    const [a, b] = R16_TO_QF[i];
+    tournament.rounds[2][i].t1 = tournament.rounds[1][a].winner;
+    tournament.rounds[2][i].t2 = tournament.rounds[1][b].winner;
+  }
+  // QF → SF
+  for (let i = 0; i < 2; i++) {
+    const [a, b] = QF_TO_SF[i];
+    tournament.rounds[3][i].t1 = tournament.rounds[2][a].winner;
+    tournament.rounds[3][i].t2 = tournament.rounds[2][b].winner;
+  }
+  // SF → Final
+  tournament.rounds[4][0].t1 = tournament.rounds[3][0].winner;
+  tournament.rounds[4][0].t2 = tournament.rounds[3][1].winner;
+  tournament.champion = tournament.rounds[4][0].winner;
+}
+
+// ═══════════════════════════════════════════════════════
+//  SCORING
+// ═══════════════════════════════════════════════════════
+
+function calcScore(playerTournament, officialTournament) {
+  // Points: R32=1, R16=2, QF=4, SF=6, Final=10
+  const pts = [1, 2, 4, 6, 10];
+  let correct = 0, total = 0, scorePoints = 0;
+  for (let r = 0; r < 5; r++) {
+    for (let m = 0; m < officialTournament.rounds[r].length; m++) {
+      const off = officialTournament.rounds[r][m];
+      const pick = playerTournament.rounds[r][m];
+      if (!off.winner) continue; // not played yet
+      total++;
+      if (pick.winner && pick.winner.name === off.winner.name) {
+        correct++;
+        scorePoints += pts[r];
+        // bonus for correct score
+        if (pick.score1 !== '' && pick.score2 !== '' &&
+            pick.score1 == off.score1 && pick.score2 == off.score2) {
+          scorePoints += 1;
+        }
+      }
+    }
+  }
+  return { correct, total, scorePoints };
+}
+
+function recalcLeaderboard() {
+  propagateWinners(state.official);
+  renderLeaderboard();
+  showToast('Scores updated!');
+}
+
+// ═══════════════════════════════════════════════════════
+//  VIEWS
+// ═══════════════════════════════════════════════════════
+
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  event.target.classList.add('active');
+
+  if (name === 'leaderboard') renderLeaderboard();
+  if (name === 'players') renderPlayers();
+  if (name === 'official') renderBracket('official');
+  if (name === 'submit') { renderPicksPlayerSelect(); renderBracket('picks'); }
+}
+
+// ═══════════════════════════════════════════════════════
+//  LEADERBOARD
+// ═══════════════════════════════════════════════════════
+
+function renderLeaderboard() {
+  const el = document.getElementById('leaderboard-content');
+  if (!state.players.length) {
+    el.innerHTML = `<div class="empty-state"><div class="icon">🏆</div>
+      No players yet. Go to the Players tab to add people!</div>`;
+    return;
+  }
+
+  const scores = state.players.map(p => {
+    const picks = state.picks[p.id];
+    if (!picks) return { ...p, correct: 0, total: 0, scorePoints: 0, hasPicks: false };
+    const s = calcScore(picks, state.official);
+    return { ...p, ...s, hasPicks: true };
+  }).sort((a, b) => b.scorePoints - a.scorePoints || b.correct - a.correct);
+
+  const maxPts = scores[0]?.scorePoints || 1;
+  const playedMatches = countPlayedMatches();
+
+  let html = `
+    <div class="info-strip" style="margin-bottom:18px;">
+      ${playedMatches} of 63 matches played · 
+      ${state.official.champion ? '🏅 Champion: ' + state.official.champion.flag + ' ' + state.official.champion.name : 'Tournament in progress...'}
+    </div>
+    <table class="leaderboard-table">
+      <thead><tr>
+        <th style="width:42px">Rank</th>
+        <th>Player</th>
+        <th>Pts</th>
+        <th>Teams Correct</th>
+        <th>Progress</th>
+        <th></th>
+      </tr></thead>
+      <tbody>`;
+
+  scores.forEach((p, i) => {
+    const rankClass = i < 3 ? `rank-${i+1}` : '';
+    const rankEmoji = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
+    html += `<tr class="${rankClass}">
+      <td><span class="rank-badge">${rankEmoji || (i+1)}</span></td>
+      <td style="font-weight:500">${p.name}</td>
+      <td><span class="score-pill">${p.scorePoints}</span></td>
+      <td>${p.correct} / ${p.total || playedMatches}</td>
+      <td>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width:${maxPts ? (p.scorePoints/maxPts*100) : 0}%"></div>
+        </div>
+      </td>
+      <td><button class="btn-sm btn-outline" onclick="viewPlayerPicks('${p.id}')">View Picks</button></td>
+    </tr>`;
+  });
+
+  html += `</tbody></table>`;
+  el.innerHTML = html;
+}
+
+function countPlayedMatches() {
+  let n = 0;
+  for (let r = 0; r < 5; r++)
+    for (let m of state.official.rounds[r])
+      if (m.winner) n++;
+  return n;
+}
+
+// ═══════════════════════════════════════════════════════
+//  PLAYERS
+// ═══════════════════════════════════════════════════════
+
+function addPlayer() {
+  const input = document.getElementById('new-player-name');
+  const name = input.value.trim();
+  if (!name) return;
+  if (state.players.find(p => p.name.toLowerCase() === name.toLowerCase())) {
+    showToast('Player already exists!', true); return;
+  }
+  const id = 'p' + Date.now();
+  state.players.push({ id, name });
+  saveState();
+  input.value = '';
+  renderPlayers();
+  showToast(name + ' added!');
+}
+
+function deletePlayer(id) {
+  if (!confirm('Remove this player and all their picks?')) return;
+  state.players = state.players.filter(p => p.id !== id);
+  delete state.picks[id];
+  saveState();
+  renderPlayers();
+}
+
+function renderPlayers() {
+  const el = document.getElementById('players-list');
+  if (!state.players.length) {
+    el.innerHTML = `<div class="empty-state"><div class="icon">👥</div>No players yet. Add the first one above!</div>`;
+    return;
+  }
+  el.innerHTML = `<div class="players-grid">${state.players.map(p => {
+    const hasPicks = !!state.picks[p.id];
+    const s = hasPicks ? calcScore(state.picks[p.id], state.official) : null;
+    return `<div class="player-card">
+      <button class="delete-btn" onclick="deletePlayer('${p.id}')" title="Remove">✕</button>
+      <div class="player-name">${p.name}</div>
+      <div class="player-score">${hasPicks
+        ? `${s.scorePoints} pts · ${s.correct}/${s.total} correct`
+        : 'No picks submitted yet'}</div>
+      <button class="btn-sm btn-gold" onclick="goToPicksFor('${p.id}')">✏ Edit Picks</button>
+      ${hasPicks ? `<button class="btn-sm btn-outline" onclick="viewPlayerPicks('${p.id}')">👁 View</button>` : ''}
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function goToPicksFor(playerId) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('view-submit').classList.add('active');
+  document.querySelectorAll('.tab-btn')[3].classList.add('active');
+  renderPicksPlayerSelect(playerId);
+  renderBracket('picks', playerId);
+}
+
+// ═══════════════════════════════════════════════════════
+//  BRACKET RENDERER (shared for official + picks)
+// ═══════════════════════════════════════════════════════
+
+let currentPicksPlayer = null;
+
+function renderPicksPlayerSelect(preselectId) {
+  const sel = document.getElementById('pick-player-select');
+  sel.innerHTML = `<option value="">— choose player —</option>` +
+    state.players.map(p => `<option value="${p.id}" ${preselectId===p.id?'selected':''}>${p.name}</option>`).join('');
+  sel.onchange = () => {
+    currentPicksPlayer = sel.value || null;
+    renderBracket('picks');
+  };
+  if (preselectId) {
+    currentPicksPlayer = preselectId;
+    renderBracket('picks');
+  }
+}
+
+function getBracketTournament(mode) {
+  if (mode === 'official') return state.official;
+  if (!currentPicksPlayer) return null;
+  if (!state.picks[currentPicksPlayer]) {
+    // Deep clone official structure but clear winners
+    state.picks[currentPicksPlayer] = initTournamentFromOfficial();
+  }
+  return state.picks[currentPicksPlayer];
+}
+
+function initTournamentFromOfficial() {
+  // Start fresh but populate R32 teams from official
+  const t = initTournament();
+  ROUND32.forEach((m, i) => {
+    t.rounds[0][i].t1 = m.t1;
+    t.rounds[0][i].t2 = m.t2;
+  });
+  return t;
+}
+
+function renderBracket(mode, preselectId) {
+  const containerId = mode === 'official' ? 'official-bracket' : 'picks-bracket';
+  const el = document.getElementById(containerId);
+  const tournament = getBracketTournament(mode);
+
+  if (!tournament) {
+    el.innerHTML = `<div class="empty-state"><div class="icon">👆</div>Select a player above to enter their picks.</div>`;
+    return;
+  }
+
+  // We render: LEFT half (rounds 0-3 left) + FINAL + RIGHT half (rounds 3-0 right)
+  // Layout: R32L | R16L | QFL | SFL | FINAL | SFR | QFR | R16R | R32R
+  // Left uses matches 0-7, Right uses matches 8-15
+
+  const rounds = tournament.rounds;
+
+  function matchHTML(match, roundIdx, matchIdx, side) {
+    if (!match) return '';
+    const t1 = match.t1;
+    const t2 = match.t2;
+    const winner = match.winner;
+    const locked = mode === 'picks' && isMatchLocked(roundIdx, matchIdx);
+
+    const teamRow = (team, scoreKey, teamKey) => {
+      if (!team) return `<div class="team-row" style="opacity:.3;cursor:default">
+        <span class="team-flag">？</span><span class="team-name">TBD</span></div>`;
+      const isWinner = winner?.name === team.name;
+      const isElim = winner && !isWinner;
+      const clickAttr = locked ? '' : `onclick="pickWinner('${mode}',${roundIdx},${matchIdx},'${teamKey}')"`;
+      const scoreVal = match[scoreKey] || '';
+      return `<div class="team-row ${isWinner?'selected':''} ${isElim?'eliminated':''}"
+          ${clickAttr} style="${locked?'cursor:default':''}" title="${locked?'🔒 Match has started — picks locked':''}">
+        <span class="team-flag">${team.flag||'🏳'}</span>
+        <span class="team-name">${team.name}</span>
+        <input class="score-input" type="number" min="0" max="99"
+          value="${scoreVal}" placeholder="-"
+          ${locked ? 'disabled style="opacity:.4"' : ''}
+          onclick="event.stopPropagation()"
+          onchange="setScore('${mode}',${roundIdx},${matchIdx},'${scoreKey}',this.value)">
+      </div>`;
+    };
+
+    const matchNum = match.id === 'F' ? 'FINAL' : `M${match.id}`;
+    const lockBadge = locked ? `<span style="float:right;font-size:10px;color:var(--gold);opacity:.8;">🔒 Locked</span>` : '';
+    const dateInfo = ROUND_KICKOFFS[roundIdx]?.[matchIdx];
+    const kickoffLabel = dateInfo && !locked
+      ? `<span style="font-size:9px;color:var(--muted);margin-left:4px;">${match.date||''}</span>` : '';
+
+    return `<div class="match-slot" style="${locked?'opacity:.85;border-color:rgba(201,168,76,0.1)':''}">
+      <div class="match-num">${matchNum} ${lockBadge}${kickoffLabel}</div>
+      ${teamRow(t1, 'score1', 't1')}
+      ${teamRow(t2, 'score2', 't2')}
+    </div>`;
+  }
+
+  function roundColHTML(roundIdx, matchIndices, label, dateStr) {
+    return `<div class="round-col">
+      <div class="round-label">${label}<small>${dateStr}</small></div>
+      <div class="matches-wrapper">
+        ${matchIndices.map(mi => matchHTML(rounds[roundIdx][mi], roundIdx, mi)).join('')}
+      </div>
+    </div>`;
+  }
+
+  // Champion box
+  const champ = tournament.champion;
+  const finalMatch = rounds[4][0];
+  const champHTML = `<div class="final-col">
+    <span class="trophy">🏆</span>
+    <div style="font-family:'Bebas Neue',cursive;font-size:14px;letter-spacing:2px;color:var(--gold);margin-bottom:4px;">CHAMPION</div>
+    <div class="champion-box">
+      <div class="name">${champ ? champ.flag+' '+champ.name : '—'}</div>
+    </div>
+    <div style="margin-top:10px;font-size:11px;color:var(--muted)">Jul 19 · 12:00 PM PT</div>
+    ${matchHTML(finalMatch, 4, 0)}
+  </div>`;
+
+  el.innerHTML = `<div class="rounds-container">
+    ${roundColHTML(0, [0,1,2,3,4,5,6,7], 'Round of 32', 'Jun 28 – Jul 3')}
+    ${roundColHTML(1, [0,1,2,3], 'Round of 16', 'Jul 4 – 7')}
+    ${roundColHTML(2, [0,1], 'Quarterfinals', 'Jul 9 – 11')}
+    ${roundColHTML(3, [0], 'Semifinals', 'Jul 14 – 15')}
+    ${champHTML}
+    ${roundColHTML(3, [1], 'Semifinals', 'Jul 14 – 15')}
+    ${roundColHTML(2, [2,3], 'Quarterfinals', 'Jul 9 – 11')}
+    ${roundColHTML(1, [4,5,6,7], 'Round of 16', 'Jul 4 – 7')}
+    ${roundColHTML(0, [8,9,10,11,12,13,14,15], 'Round of 32', 'Jun 28 – Jul 3')}
+  </div>`;
+}
+
+function pickWinner(mode, roundIdx, matchIdx, teamKey) {
+  if (mode === 'picks' && isMatchLocked(roundIdx, matchIdx)) {
+    showToast('🔒 This match has already started — picks are locked!', true);
+    return;
+  }
+  const tournament = getBracketTournament(mode);
+  if (!tournament) return;
+  const match = tournament.rounds[roundIdx][matchIdx];
+  const team = match[teamKey];
+  if (!team) return;
+
+  // Toggle: if already winner, deselect
+  if (match.winner?.name === team.name) {
+    match.winner = null;
+  } else {
+    match.winner = team;
+  }
+
+  // Propagate
+  propagateWinners(tournament);
+
+  if (mode === 'official') saveState();
+  renderBracket(mode);
+}
+
+function setScore(mode, roundIdx, matchIdx, scoreKey, val) {
+  const tournament = getBracketTournament(mode);
+  if (!tournament) return;
+  tournament.rounds[roundIdx][matchIdx][scoreKey] = val;
+  if (mode === 'official') saveState();
+}
+
+function saveOfficial() {
+  propagateWinners(state.official);
+  saveState();
+  renderLeaderboard();
+  showToast('Official results saved!');
+}
+
+function savePicks() {
+  if (!currentPicksPlayer) { showToast('Select a player first!', true); return; }
+  const t = state.picks[currentPicksPlayer];
+  if (!t) { showToast('Make some picks first!', true); return; }
+  saveState();
+  showToast('Picks saved for ' + state.players.find(p=>p.id===currentPicksPlayer)?.name + '!');
+}
+
+function clearPicksForm() {
+  if (!currentPicksPlayer) return;
+  if (!confirm('Clear all picks for this player?')) return;
+  delete state.picks[currentPicksPlayer];
+  saveState();
+  renderBracket('picks');
+}
+
+// ═══════════════════════════════════════════════════════
+//  VIEW PLAYER PICKS MODAL
+// ═══════════════════════════════════════════════════════
+
+function viewPlayerPicks(playerId) {
+  const player = state.players.find(p => p.id === playerId);
+  const picks = state.picks[playerId];
+  if (!player || !picks) return;
+
+  document.getElementById('modal-player-name').textContent = player.name + "'s Picks";
+  const score = calcScore(picks, state.official);
+
+  const rNames = ['Round of 32','Round of 16','Quarterfinals','Semifinals','Final'];
+  const pts = [1,2,4,6,10];
+
+  let html = `<div class="info-strip">
+    Score: ${score.scorePoints} pts · ${score.correct}/${score.total} correct predictions
+  </div>`;
+
+  for (let r = 0; r < 5; r++) {
+    html += `<div style="margin-top:16px;">
+      <div style="font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:1.5px;color:var(--gold);margin-bottom:8px;">
+        ${rNames[r]} (${pts[r]} pt each)
+      </div>`;
+
+    for (let m = 0; m < picks.rounds[r].length; m++) {
+      const pick = picks.rounds[r][m];
+      const off = state.official.rounds[r][m];
+      if (!pick.winner) continue;
+
+      const correct = off.winner && pick.winner.name === off.winner.name;
+      const played = !!off.winner;
+      const icon = !played ? '⏳' : correct ? '✅' : '❌';
+
+      html += `<div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:4px;
+          background:${correct?'rgba(46,125,50,0.15)':played?'rgba(183,28,28,0.1)':'rgba(255,255,255,0.03)'};
+          margin-bottom:4px;font-size:13px;">
+        <span>${icon}</span>
+        <span style="color:var(--cream)">${pick.winner.flag} ${pick.winner.name}</span>
+        ${pick.score1!==''&&pick.score2!=='' ? `<span style="color:var(--muted);font-family:'Courier Prime',monospace;">${pick.score1}–${pick.score2}</span>` : ''}
+        <span style="margin-left:auto;color:var(--muted);font-size:11px">M${pick.id==='F'?'Final':pick.id}</span>
+      </div>`;
+    }
+    html += `</div>`;
+  }
+
+  document.getElementById('modal-picks-content').innerHTML = html;
+  document.getElementById('picks-modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('picks-modal').classList.remove('open');
+}
+
+// ═══════════════════════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════════════════════
+
+function showToast(msg, error) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = error ? 'var(--lose)' : 'var(--win)';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ═══════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════
+
+loadState();
+
+// Ensure R32 teams are always populated in official
+ROUND32.forEach((m, i) => {
+  if (!state.official.rounds[0][i].t1) {
+    state.official.rounds[0][i].t1 = m.t1;
+    state.official.rounds[0][i].t2 = m.t2;
+  }
+});
+propagateWinners(state.official);
+renderLeaderboard();
+updateLastSavedLabel();
+
+// Close modal on overlay click
+document.getElementById('picks-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+</script>
+</body>
+</html>
