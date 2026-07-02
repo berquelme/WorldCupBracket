@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Camp Higgins – FIFA World Cup 2026 Daily Challenge</title>
+<title>Camp Higgins – Mundial FIFA 2026 Desafío Diario</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=Courier+Prime:wght@400;700&display=swap');
@@ -357,47 +357,47 @@
 
 <header>
   <div class="header-title">
-    <span>CAMP HIGGINS · FIFA WORLD CUP</span>
-    <h1>2026 DAILY <em>CHALLENGE</em></h1>
+    <span>CAMP HIGGINS · MUNDIAL FIFA</span>
+    <h1>2026 DESAFÍO <em>DIARIO</em></h1>
   </div>
   <nav class="nav-tabs">
-    <button class="tab-btn active" onclick="showView('leaderboard')">🏆 Leaderboard</button>
-    <button class="tab-btn" onclick="showView('players')">👥 Players</button>
-    <button class="tab-btn" onclick="showView('official')">⚽ Daily Results (Admin)</button>
-    <button class="tab-btn" onclick="showView('submit')">📋 Daily Picks</button>
+    <button class="tab-btn active" onclick="showView('leaderboard')">🏆 Tabla de Posiciones</button>
+    <button class="tab-btn" onclick="showView('players')">👥 Jugadores</button>
+    <button class="tab-btn" onclick="showView('official')">⚽ Resultados Diarios (Admin)</button>
+    <button class="tab-btn" onclick="showView('submit')">📋 Mi Elección Diaria</button>
   </nav>
 </header>
 
 <div class="status-bar">
   <span class="connection-dot" id="connection-dot"></span>
-  <span id="connection-label">Connecting...</span>
+  <span id="connection-label">Conectando...</span>
 </div>
 
 <!-- ══ LEADERBOARD ══ -->
 <div id="view-leaderboard" class="view active">
-  <div class="section-title">Standings</div>
+  <div class="section-title">Tabla de Posiciones</div>
   <div id="leaderboard-content"></div>
 </div>
 
 <!-- ══ PLAYERS ══ -->
 <div id="view-players" class="view">
-  <div class="section-title">Players</div>
+  <div class="section-title">Jugadores</div>
   <div class="info-strip">
-    Anyone with this link can add their name here once. After that, they select their name on the Daily Picks tab to submit predictions — no password needed.
+    Cualquiera con este enlace puede agregar su nombre aquí una sola vez. Después, eligen su nombre en la pestaña "Mi Elección Diaria" para enviar sus predicciones — no necesitan contraseña.
   </div>
   <div class="add-player-form">
-    <input type="text" id="new-player-name" placeholder="Player name..." maxlength="30"
+    <input type="text" id="new-player-name" placeholder="Nombre del jugador..." maxlength="30"
       onkeydown="if(event.key==='Enter') addPlayer()">
-    <button class="btn btn-gold" onclick="addPlayer()">+ Add Player</button>
+    <button class="btn btn-gold" onclick="addPlayer()">+ Agregar Jugador</button>
   </div>
   <div id="players-list"></div>
 </div>
 
 <!-- ══ DAILY OFFICIAL RESULTS (admin) ══ -->
 <div id="view-official" class="view">
-  <div class="section-title">Daily Results — Admin Only</div>
+  <div class="section-title">Resultados Diarios — Solo Admin</div>
   <div class="info-strip">
-    Click the winning team for each match played that day (always editable, any day, any time). Score is optional, just for the +1 exact-score bonus. Players earn 3 points for picking the correct winner.
+    Toca el equipo ganador de cada partido jugado ese día (siempre se puede editar, cualquier día, a cualquier hora). El marcador es opcional, solo para el punto extra. Los jugadores ganan 3 puntos por elegir al ganador correcto.
   </div>
   <div id="official-day-nav" class="day-nav"></div>
   <div id="official-matches"></div>
@@ -405,18 +405,18 @@
 
 <!-- ══ DAILY PICKS (players) ══ -->
 <div id="view-submit" class="view">
-  <div class="section-title">Submit Daily Picks</div>
+  <div class="section-title">Mi Elección Diaria</div>
   <div class="two-col" style="margin-bottom:12px;">
     <div>
-      <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px;">Select Your Name</label>
+      <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:6px;">Selecciona tu Nombre</label>
       <select id="pick-player-select">
-        <option value="">— choose player —</option>
+        <option value="">— elige jugador —</option>
       </select>
     </div>
     <div></div>
   </div>
   <div class="info-strip">
-    Pick a day, then choose who you think wins each match and enter your predicted score. Picks save automatically. Matches lock once they kick off.
+    Elige un día, luego toca el equipo que crees que va a ganar cada partido. El marcador es opcional. Tu elección se guarda automáticamente. Los partidos se bloquean una vez que comienzan.
   </div>
   <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--gold-light);margin-bottom:14px;cursor:pointer;">
     <input type="checkbox" id="admin-override-toggle" onchange="toggleAdminOverride()" style="width:16px;height:16px;cursor:pointer;">
@@ -430,7 +430,7 @@
 <div class="modal-overlay" id="picks-modal">
   <div class="modal">
     <div class="modal-header">
-      <h2 id="modal-player-name">Player Picks</h2>
+      <h2 id="modal-player-name">Elección del Jugador</h2>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
     <div id="modal-picks-content"></div>
@@ -438,6 +438,28 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- ══ INSTRUCCIONES (footer, siempre visible) ══ -->
+<footer style="background:#0D2419;border-top:2px solid var(--gold);padding:28px 24px;margin-top:40px;">
+  <div style="max-width:900px;margin:0 auto;">
+    <div style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;color:var(--gold);margin-bottom:14px;">
+      📋 CÓMO PARTICIPAR
+    </div>
+    <ol style="color:var(--cream);font-size:14px;line-height:1.8;padding-left:20px;">
+      <li><strong>Busca tu nombre</strong> en la pestaña "Mi Elección Diaria", en el menú desplegable.</li>
+      <li><strong>Toca el equipo</strong> (el nombre o la bandera) que creas que va a ganar — eso es lo único que tienes que hacer.</li>
+      <li>🟡 <strong>Si el equipo se pone de color dorado, ya quedó guardado.</strong> No necesitas hacer nada más — ese color dorado significa que tu elección ya se registró correctamente.</li>
+      <li>Se gana 1 punto extra solo si atinas al ganador y al resultado. Si le atinas al resultado, pero no al ganador, no haces punto extra. El cuadro de número junto al equipo es opcional — no es necesario llenarlo, y no afecta si tu elección se guardó o no.</li>
+      <li>No hay botón de "guardar" — <strong>todo se guarda automáticamente</strong> en el momento que tocas el equipo y se pone dorado.</li>
+      <li>Una vez que el partido comienza, se <strong>bloquea</strong> y ya no puedes cambiar tu elección.</li>
+      <li>Puedes volver cualquier día antes de cada partido para hacer tu elección — no tienes que hacerlo todo de una vez.</li>
+      <li>Para confirmar si tus elecciones ya están guardadas, ve a <strong>Tabla de Posiciones</strong> y toca <strong>"Ver Elección"</strong> junto a tu nombre.</li>
+    </ol>
+    <div style="margin-top:16px;font-size:13px;color:var(--gold-light);background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.25);border-radius:4px;padding:10px 14px;">
+      💡 Ganas <strong>3 puntos</strong> por elegir el equipo correcto, más <strong>1 punto extra</strong> si también adivinas el marcador exacto.
+    </div>
+  </div>
+</footer>
 
 <script>
 // ═══════════════════════════════════════════════════════
@@ -646,13 +668,13 @@ function setConnectionStatus(status) {
   const label = document.getElementById('connection-label');
   if (status === 'online') {
     dot.className = 'connection-dot online';
-    label.textContent = 'Live — connected to shared database';
+    label.textContent = 'En vivo — conectado a la base de datos compartida';
   } else if (status === 'connecting') {
     dot.className = 'connection-dot';
-    label.innerHTML = '<span class="loading-spinner"></span>Connecting to shared database...';
+    label.innerHTML = '<span class="loading-spinner"></span>Conectando a la base de datos compartida...';
   } else {
     dot.className = 'connection-dot offline';
-    label.textContent = 'Connection issue — changes may not save. Check your internet.';
+    label.textContent = 'Problema de conexión — los cambios pueden no guardarse. Revisa tu internet.';
   }
 }
 
@@ -696,7 +718,7 @@ async function loadAllData() {
   } catch (err) {
     console.error('Load error:', err);
     setConnectionStatus('offline');
-    showToast('Could not load data: ' + (err.message || 'unknown error'), true);
+    showToast('No se pudo cargar la información: ' + (err.message || 'error desconocido'), true);
   }
 }
 
@@ -782,7 +804,29 @@ function getTodayDateStr() {
 // ═══════════════════════════════════════════════════════
 //  NAVIGATION
 // ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
+//  ADMIN PASSWORD
+// ═══════════════════════════════════════════════════════
+const ADMIN_PASSWORD = 'Copamundial';
+let adminAuthenticated = false;
+
+function checkAdminPassword() {
+  if (adminAuthenticated) return true;
+  const attempt = prompt('🔐 Acceso Admin\n\nIngresa la contraseña para continuar:');
+  if (attempt === null) return false; // user cancelled
+  if (attempt === ADMIN_PASSWORD) {
+    adminAuthenticated = true;
+    showToast('✅ Acceso admin concedido');
+    return true;
+  }
+  showToast('❌ Contraseña incorrecta — acceso denegado', true);
+  return false;
+}
+
 function showView(name) {
+  if (name === 'official' && !checkAdminPassword()) {
+    return; // block access, stay on current view
+  }
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('view-' + name).classList.add('active');
@@ -802,39 +846,39 @@ async function addPlayer() {
   const name = input.value.trim();
   if (!name) return;
   if (players.find(p => p.name.toLowerCase() === name.toLowerCase())) {
-    showToast('That name is already on the list!', true); return;
+    showToast('¡Ese nombre ya está en la lista!', true); return;
   }
   const id = 'p' + Date.now() + Math.random().toString(36).slice(2,7);
   const { error } = await sb.from('players').insert({ id, name });
-  if (error) { showToast('Could not add player: ' + error.message, true); return; }
+  if (error) { showToast('No se pudo agregar al jugador: ' + error.message, true); return; }
   input.value = '';
-  showToast(name + ' added!');
+  showToast('¡' + name + ' agregado!');
   // realtime will trigger reload; but reload immediately too for snappy feel
   await loadAllData();
 }
 
 async function deletePlayer(id) {
-  if (!confirm('Remove this player and all their picks?')) return;
+  if (!confirm('¿Eliminar a este jugador y toda su elección?')) return;
   const { error } = await sb.from('players').delete().eq('id', id);
-  if (error) { showToast('Could not remove player: ' + error.message, true); return; }
+  if (error) { showToast('No se pudo eliminar al jugador: ' + error.message, true); return; }
   await loadAllData();
 }
 
 function renderPlayers() {
   const el = document.getElementById('players-list');
   if (!players.length) {
-    el.innerHTML = `<div class="empty-state"><div class="icon">👥</div>No players yet. Add the first one above!</div>`;
+    el.innerHTML = `<div class="empty-state"><div class="icon">👥</div>Aún no hay jugadores. ¡Agrega el primero arriba!</div>`;
     return;
   }
   const today = getTodayDateStr();
   el.innerHTML = `<div class="players-grid">${players.map(p => {
     const s = calcPlayerScore(p.id, today);
     return `<div class="player-card">
-      <button class="delete-btn" onclick="deletePlayer('${p.id}')" title="Remove">✕</button>
+      <button class="delete-btn" onclick="deletePlayer('${p.id}')" title="Eliminar">✕</button>
       <div class="player-name">${escapeHtml(p.name)}</div>
-      <div class="player-score">${s.total} total pts · ${s.correctCount}/${s.playedCount} correct</div>
-      <button class="btn-sm btn-gold" onclick="goToPicksFor('${p.id}')" style="margin-top:8px;margin-right:6px;">✏ Edit Picks</button>
-      <button class="btn-sm btn-outline" onclick="viewPlayerPicks('${p.id}')">👁 View</button>
+      <div class="player-score">${s.total} pts en total · ${s.correctCount}/${s.playedCount} correctas</div>
+      <button class="btn-sm btn-gold" onclick="goToPicksFor('${p.id}')" style="margin-top:8px;margin-right:6px;">✏ Editar Elección</button>
+      <button class="btn-sm btn-outline" onclick="viewPlayerPicks('${p.id}')">👁 Ver</button>
     </div>`;
   }).join('')}</div>`;
 }
@@ -865,7 +909,7 @@ let adminOverride = false;
 function toggleAdminOverride() {
   adminOverride = document.getElementById('admin-override-toggle').checked;
   renderPicksMatches();
-  if (adminOverride) showToast('🔓 Admin override on — locked matches are now editable');
+  if (adminOverride) showToast('🔓 Modo admin activado — ahora puedes editar partidos bloqueados');
 }
 
 function renderDayNav(mode) {
@@ -974,10 +1018,10 @@ async function setOfficialWinner(date, matchId, teamName) {
   }, { onConflict: 'match_date,match_id' });
 
   if (error) {
-    showToast('Could not save result: ' + error.message, true);
+    showToast('No se pudo guardar el resultado: ' + error.message, true);
     await loadAllData(); // revert to true state
   } else {
-    showToast('Result saved for M' + matchId + '!');
+    showToast('¡Resultado guardado para el partido M' + matchId + '!');
     await loadAllData();
   }
 }
@@ -1024,7 +1068,7 @@ function renderPicksMatches() {
   if (!day) { el.innerHTML = ''; return; }
 
   if (!currentPicksPlayer) {
-    el.innerHTML = `<div class="empty-state"><div class="icon">👆</div>Select your name above to enter picks for this day.</div>`;
+    el.innerHTML = `<div class="empty-state"><div class="icon">👆</div>Selecciona tu nombre arriba para hacer tu elección de este día.</div>`;
     return;
   }
 
@@ -1063,7 +1107,7 @@ async function pickTeam(date, matchId, teamName) {
   const day = TOURNAMENT_DAYS.find(d => d.date === date);
   const m = day.matches.find(mm => mm.id === matchId);
   if (isMatchLocked(m.kickoff) && !adminOverride) {
-    showToast('🔒 This match has already started — picks are locked!', true);
+    showToast('🔒 Este partido ya comenzó — la elección está bloqueada.', true);
     return;
   }
   const key = pickKey(currentPicksPlayer, date, matchId);
@@ -1084,10 +1128,10 @@ async function pickTeam(date, matchId, teamName) {
   }, { onConflict: 'player_id,match_date,match_id' });
 
   if (error) {
-    showToast('Could not save pick: ' + error.message, true);
+    showToast('No se pudo guardar tu elección: ' + error.message, true);
     await loadAllData();
   } else {
-    showToast('Pick saved!');
+    showToast('¡Elección guardada!');
     await loadAllData();
   }
 }
@@ -1122,7 +1166,7 @@ async function setPickScore(date, matchId, key, val) {
 function renderLeaderboard() {
   const el = document.getElementById('leaderboard-content');
   if (!players.length) {
-    el.innerHTML = `<div class="empty-state"><div class="icon">🏆</div>No players yet. Go to the Players tab to add people!</div>`;
+    el.innerHTML = `<div class="empty-state"><div class="icon">🏆</div>Aún no hay jugadores. Ve a la pestaña Jugadores para agregar personas.</div>`;
     return;
   }
 
@@ -1139,15 +1183,15 @@ function renderLeaderboard() {
   }
 
   let html = `<div class="info-strip">
-    ${totalPlayed} matches played so far ${todayLabel ? '· Today: ' + todayLabel : ''}
+    ${totalPlayed} partidos jugados hasta ahora ${todayLabel ? '· Hoy: ' + todayLabel : ''}
   </div>
   <table class="leaderboard-table">
     <thead><tr>
-      <th style="width:42px">Rank</th>
-      <th>Player</th>
-      <th>Total Pts</th>
-      <th>Today's Pts</th>
-      <th>Correct</th>
+      <th style="width:42px">#</th>
+      <th>Jugador</th>
+      <th>Puntos Totales</th>
+      <th>Puntos de Hoy</th>
+      <th>Correctas</th>
       <th></th>
     </tr></thead><tbody>`;
 
@@ -1160,7 +1204,7 @@ function renderLeaderboard() {
       <td><span class="score-pill">${p.total}</span></td>
       <td>${p.todayTotal > 0 ? `<span class="today-pill">+${p.todayTotal}</span>` : '<span style="color:var(--muted)">—</span>'}</td>
       <td>${p.correctCount} / ${p.playedCount}</td>
-      <td><button class="btn-sm btn-outline" onclick="viewPlayerPicks('${p.id}')">View Picks</button></td>
+      <td><button class="btn-sm btn-outline" onclick="viewPlayerPicks('${p.id}')">Ver Elección</button></td>
     </tr>`;
   });
 
@@ -1174,7 +1218,7 @@ function renderLeaderboard() {
 function viewPlayerPicks(playerId) {
   const player = players.find(p => p.id === playerId);
   if (!player) return;
-  document.getElementById('modal-player-name').textContent = player.name + "'s Picks";
+  document.getElementById('modal-player-name').textContent = "Elección de " + player.name;
 
   const today = getTodayDateStr();
   const s = calcPlayerScore(playerId, today);
@@ -1211,7 +1255,7 @@ function viewPlayerPicks(playerId) {
     html += `</div>`;
   }
 
-  document.getElementById('modal-picks-content').innerHTML = html || `<div class="empty-state">No picks submitted yet.</div>`;
+  document.getElementById('modal-picks-content').innerHTML = html || `<div class="empty-state">Aún no ha hecho su elección.</div>`;
   document.getElementById('picks-modal').classList.add('open');
 }
 
@@ -1240,27 +1284,5 @@ document.getElementById('picks-modal').addEventListener('click', function(e) {
 loadAllData();
 setupRealtime();
 </script>
-<!-- ══ INSTRUCCIONES (footer, siempre visible) ══ -->
-<footer style="background:#0D2419;border-top:2px solid var(--gold);padding:28px 24px;margin-top:40px;">
-  <div style="max-width:900px;margin:0 auto;">
-    <div style="font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;color:var(--gold);margin-bottom:14px;">
-      📋 CÓMO JUGAR
-    </div>
-    <ol style="color:var(--cream);font-size:14px;line-height:1.8;padding-left:20px;">
-      <li>Toca el botón <strong>"Daily Picks"</strong> en la parte superior derecha.</li>
-      <li>Elige tu nombre en el menú desplegable que dice <strong>"Choose a Player"</strong> ("Selecciona tu nombre") — sin esto, no puedes hacer tu elección.</li>
-      <li>Toca el equipo (el nombre o la bandera) que creas que va a ganar y agrega tu marcador.</li>
-      <li>🟡 <strong>Si el equipo se pone de color dorado, ya quedó guardado.</strong> No necesitas hacer nada más — ese color dorado significa que tu elección ya se registró correctamente.</li>
-      <li>Se gana 1 punto extra solo si atinas al ganador y al resultado. Si le atinas al resultado, pero no al ganador, no haces punto extra.</li>
-      <li>No hay botón de "guardar" — <strong>todo se guarda automáticamente</strong> en el momento que tocas el equipo y se pone dorado.</li>
-      <li>Una vez que el partido comienza, se <strong>bloquea</strong> y ya no puedes cambiar tu elección.</li>
-      <li>Puedes volver cualquier día antes de cada partido para hacer tu elección — no tienes que hacerlo todo de una vez.</li>
-      <li>Para confirmar si tus elecciones ya están guardadas, ve a <strong>Leaderboard</strong></strong> y toca <strong>"View Picks"</strong> junto a tu nombre.</li>
-    </ol>
-    <div style="margin-top:16px;font-size:13px;color:var(--gold-light);background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.25);border-radius:4px;padding:10px 14px;">
-      💡 Ganas <strong>3 puntos</strong> por elegir el equipo correcto, más <strong>1 punto extra</strong> si también adivinas el marcador exacto.
-    </div>
-  </div>
-</footer>
 </body>
 </html>
