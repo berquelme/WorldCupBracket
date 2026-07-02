@@ -446,10 +446,12 @@
       📋 CÓMO PARTICIPAR
     </div>
     <ol style="color:var(--cream);font-size:14px;line-height:1.8;padding-left:20px;">
-      <li><strong>Busca tu nombre</strong> en la pestaña "Mi Elección Diaria", en el menú desplegable.</li>
-      <li><strong>Toca el equipo</strong> (el nombre o la bandera) que creas que va a ganar — eso es lo único que tienes que hacer.</li>
+      <li>Toca el botón <strong>"Daily Picks"</strong> en la parte superior derecha.</li>
+      <li>Elige tu nombre en el menú desplegable que dice <strong>"Choose a Player"</strong> ("Selecciona tu nombre") — sin esto, no puedes hacer tu elección.</li>
+      <li>Toca el equipo (el nombre o la bandera) que creas que va a ganar y agrega tu marcador.</li>
       <li>🟡 <strong>Si el equipo se pone de color dorado, ya quedó guardado.</strong> No necesitas hacer nada más — ese color dorado significa que tu elección ya se registró correctamente.</li>
-      <li>Se gana 1 punto extra solo si atinas al ganador y al resultado. Si le atinas al resultado, pero no al ganador, no haces punto extra. El cuadro de número junto al equipo es opcional — no es necesario llenarlo, y no afecta si tu elección se guardó o no.</li>
+      <li>🔵 Vas a ver un <strong>mensaje en la esquina inferior derecha</strong> que dice <strong>"¡Elección guardada!"</strong> — eso confirma que tu elección fue guardada exitosamente.</li>
+      <li>Se gana 1 punto extra solo si atinas al ganador y al resultado. Si le atinas al resultado, pero no al ganador, no haces punto extra.</li>
       <li>No hay botón de "guardar" — <strong>todo se guarda automáticamente</strong> en el momento que tocas el equipo y se pone dorado.</li>
       <li>Una vez que el partido comienza, se <strong>bloquea</strong> y ya no puedes cambiar tu elección.</li>
       <li>Puedes volver cualquier día antes de cada partido para hacer tu elección — no tienes que hacerlo todo de una vez.</li>
@@ -1042,7 +1044,7 @@ async function setOfficialScore(date, matchId, key, val) {
   }, { onConflict: 'match_date,match_id' });
 
   if (error) {
-    showToast('Could not save score: ' + error.message, true);
+    showToast('No se pudo guardar el marcador: ' + error.message, true);
   } else {
     await loadAllData();
   }
@@ -1053,7 +1055,7 @@ async function setOfficialScore(date, matchId, key, val) {
 // ═══════════════════════════════════════════════════════
 function renderPicksPlayerSelect(preselectId) {
   const sel = document.getElementById('pick-player-select');
-  sel.innerHTML = `<option value="">— choose player —</option>` +
+  sel.innerHTML = `<option value="">— elige jugador —</option>` +
     players.map(p => `<option value="${p.id}" ${preselectId===p.id || currentPicksPlayer===p.id?'selected':''}>${escapeHtml(p.name)}</option>`).join('');
   sel.onchange = () => {
     currentPicksPlayer = sel.value || null;
@@ -1154,7 +1156,7 @@ async function setPickScore(date, matchId, key, val) {
   }, { onConflict: 'player_id,match_date,match_id' });
 
   if (error) {
-    showToast('Could not save score: ' + error.message, true);
+    showToast('No se pudo guardar el marcador: ' + error.message, true);
   } else {
     await loadAllData();
   }
@@ -1223,7 +1225,7 @@ function viewPlayerPicks(playerId) {
   const today = getTodayDateStr();
   const s = calcPlayerScore(playerId, today);
 
-  let html = `<div class="info-strip">Total: ${s.total} pts · ${s.correctCount}/${s.playedCount} correct predictions</div>`;
+  let html = `<div class="info-strip">Total: ${s.total} pts · ${s.correctCount}/${s.playedCount} predicciones correctas</div>`;
 
   for (const day of TOURNAMENT_DAYS) {
     const hasAnyPick = day.matches.some(m => allPicks[pickKey(playerId, day.date, m.id)]?.winner);
